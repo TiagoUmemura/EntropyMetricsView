@@ -63,6 +63,8 @@ public class BuscarServlet extends HttpServlet {
         for (Repository repo : service.getRepositories("TiagoUmemura"))
             System.out.println(repo.getName() + " Watchers: " + repo.getWatchers());
         
+        Runtime.getRuntime().exec("java -jar cm.jar /home/tiago/NetBeansProjects/WebApplicationTCC2/Algoritmo-de-Djkistra-em-Java /home/tiago/NetBeansProjects/WebApplicationTCC2/teste.csv single");
+        
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }
 
