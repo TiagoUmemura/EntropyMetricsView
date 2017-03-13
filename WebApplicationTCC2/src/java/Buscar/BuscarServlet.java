@@ -13,7 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.egit.github.core.Repository;
+import org.eclipse.egit.github.core.RepositoryCommit;
 import org.eclipse.egit.github.core.client.GitHubClient;
+import org.eclipse.egit.github.core.service.CommitService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
 /**
@@ -59,9 +61,20 @@ public class BuscarServlet extends HttpServlet {
         GitHubClient client = new GitHubClient();
         client.setCredentials("TiagoUmemura", "umemura93765520");
         
+        CommitService serviceCommit = new CommitService();
         RepositoryService service = new RepositoryService();
-        for (Repository repo : service.getRepositories("TiagoUmemura"))
-            System.out.println(repo.getName() + " Watchers: " + repo.getWatchers());
+        
+        //for (Repository repo : service.getRepositories("TiagoUmemura")){
+            //System.out.println(repo.getName() + " Watchers: " + repo.getWatchers());
+            //for(RepositoryCommit commit : serviceCommit.getCommits(repo)){
+                //System.out.println("Sha commit:" + commit.getSha());
+            //}
+        //}
+        
+        Repository repoExample = service.getRepository("TiagoUmemura", "Algoritmo-de-Djkistra-em-Java");
+        for(RepositoryCommit commit : serviceCommit.getCommits(repoExample)){
+            System.out.println("Sha commit: " + commit.getSha());
+        }
         
         Runtime.getRuntime().exec("java -jar cm.jar /home/tiago/NetBeansProjects/WebApplicationTCC2/Algoritmo-de-Djkistra-em-Java /home/tiago/NetBeansProjects/WebApplicationTCC2/teste.csv single");
         
