@@ -7,15 +7,24 @@ package Buscar;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.eclipse.egit.github.core.Commit;
+import org.eclipse.egit.github.core.CommitFile;
+import org.eclipse.egit.github.core.CommitStatus;
+import org.eclipse.egit.github.core.CommitUser;
+import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryCommit;
+import org.eclipse.egit.github.core.User;
 import org.eclipse.egit.github.core.client.GitHubClient;
 import org.eclipse.egit.github.core.service.CommitService;
+import org.eclipse.egit.github.core.service.IssueService;
+import org.eclipse.egit.github.core.service.PullRequestService;
 import org.eclipse.egit.github.core.service.RepositoryService;
 
 /**
@@ -59,11 +68,18 @@ public class BuscarServlet extends HttpServlet {
         System.out.println(name + "----" + password);
         
         GitHubClient client = new GitHubClient();
-        client.setCredentials("TiagoUmemura", "umemura93765520");
+        client.setOAuth2Token("b46b5c248d2631c81fb03fe41e5b8f8f1701f50a");
         
-        CommitService serviceCommit = new CommitService();
-        RepositoryService service = new RepositoryService();
+        CommitService serviceCommit = new CommitService(client);
+        RepositoryService service = new RepositoryService(client);
+        PullRequestService servicePullRequest = new PullRequestService(client);
+        IssueService serviceissue = new IssueService(client);
         
+        //escolhendo repositrio
+        //Repository repoExample = service.getRepository("una", "CSSgram");
+        Repository repoExample = service.getRepository("TiagoUmemura", "Algoritmo-de-Djkistra-em-Java");
+        
+        //Todos os repositorios de um usuário
         //for (Repository repo : service.getRepositories("TiagoUmemura")){
             //System.out.println(repo.getName() + " Watchers: " + repo.getWatchers());
             //for(RepositoryCommit commit : serviceCommit.getCommits(repo)){
@@ -71,13 +87,37 @@ public class BuscarServlet extends HttpServlet {
             //}
         //}
         
-        Repository repoExample = service.getRepository("TiagoUmemura", "Algoritmo-de-Djkistra-em-Java");
+        //date está no User commiter (quando é integrado no master) e User author (quando é feito o commit)
+        //todos os sha dos commits de um repositorio
         for(RepositoryCommit commit : serviceCommit.getCommits(repoExample)){
             System.out.println("Sha commit: " + commit.getSha());
+            Commit commitdate = commit.getCommit();//pegar o tipo commit do repositoryCommit
+            CommitUser commituser = commitdate.getCommitter();//pegar o commiter
+            System.out.println("date: " + commituser.getDate());//no commiter pegar a data
+             
+        }
+
+        //Todos os pull request de um repositório, commit no pull e arquivos modificados no pull
+        //Atencao: int number é o id.
+        //state: open, close e all no estado do pull request
+        for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample, "open")){
+            System.out.println("Date open: " + pullreq.getCreatedAt());
+            System.out.println("Date close: " + pullreq.getClosedAt());
+            System.out.println("Name:" + pullreq.getTitle());
+            
+            List<RepositoryCommit> pullcommits = servicePullRequest.getCommits(repoExample, pullreq.getNumber());
+            System.out.println("Numero de commits: " + pullcommits.size());
+            
+            //arquivos modificados no pull
+            List<CommitFile> commitfile = servicePullRequest.getFiles(repoExample, pullreq.getNumber());
+            for(int i = 0; i < commitfile.size(); i++){
+                CommitFile c = commitfile.get(i);
+                System.out.println("Name: " + c.getFilename() + " |" + "Linha modificada: " + c.getChanges());
+                
+            }
         }
         
-        Runtime.getRuntime().exec("java -jar cm.jar /home/tiago/NetBeansProjects/WebApplicationTCC2/Algoritmo-de-Djkistra-em-Java /home/tiago/NetBeansProjects/WebApplicationTCC2/teste.csv single");
-        
+        //É possivel pegar todas as modificacoes no pull request? ou somente na lista de commits
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }
 
