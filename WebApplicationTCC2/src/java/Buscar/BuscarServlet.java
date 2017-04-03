@@ -7,7 +7,12 @@ package Buscar;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -62,13 +67,24 @@ public class BuscarServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 //        processRequest(request, response);
+        int count = 0;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateinicio = new Date();
+        Date datefinal = new Date();
+            try {
+                dateinicio = sdf.parse("2015-12-05");
+                datefinal = sdf.parse("2015-12-10");
+            } catch (ParseException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         String op = request.getParameter("op"); //nome do botao submit
         String name = request.getParameter("namerepo");//pegar parametro nome do jsp
         String password = request.getParameter("idrepo");//pegar parametro password do jsp
         System.out.println(name + "----" + password);
         
         GitHubClient client = new GitHubClient();
-        client.setOAuth2Token("b46b5c248d2631c81fb03fe41e5b8f8f1701f50a");
+        client.setOAuth2Token("");
         
         CommitService serviceCommit = new CommitService(client);
         RepositoryService service = new RepositoryService(client);
@@ -94,13 +110,17 @@ public class BuscarServlet extends HttpServlet {
             Commit commitdate = commit.getCommit();//pegar o tipo commit do repositoryCommit
             CommitUser commituser = commitdate.getCommitter();//pegar o commiter
             System.out.println("date: " + commituser.getDate());//no commiter pegar a data
+            
+            if(commituser.getDate().after(dateinicio) && commituser.getDate().before(datefinal)){
+                count++;
+            }
              
         }
 
         //Todos os pull request de um repositório, commit no pull e arquivos modificados no pull
         //Atencao: int number é o id.
         //state: open, close e all no estado do pull request
-        for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample, "open")){
+        /*for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample, "open")){
             System.out.println("Date open: " + pullreq.getCreatedAt());
             System.out.println("Date close: " + pullreq.getClosedAt());
             System.out.println("Name:" + pullreq.getTitle());
@@ -115,8 +135,8 @@ public class BuscarServlet extends HttpServlet {
                 System.out.println("Name: " + c.getFilename() + " |" + "Linha modificada: " + c.getChanges());
                 
             }
-        }
-        
+        }*/
+        System.out.println("Commits:" + count);
         //É possivel pegar todas as modificacoes no pull request? ou somente na lista de commits
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }
