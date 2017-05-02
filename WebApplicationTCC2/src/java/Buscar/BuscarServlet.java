@@ -115,6 +115,7 @@ public class BuscarServlet extends HttpServlet {
         //escolhendo repositrio egit
         //Repository repoExample = service.getRepository("una", "CSSgram");
         Repository repoExample = service.getRepository("TiagoUmemura", "Algoritmo-de-Djkistra-em-Java");
+        Repository repoExample2 = service.getRepository("una", "CSSgram");
         
         //Todos os repositorios de um usuário
         //for (Repository repo : service.getRepositories("TiagoUmemura")){
@@ -144,6 +145,14 @@ public class BuscarServlet extends HttpServlet {
                 for(int i = 0; i < listarquivo.size(); i++){
                     System.out.println("nome do arquivo: " + listarquivo.get(i).getFileName());
                     System.out.println("linhas modificadas: " + listarquivo.get(i).getLinesChanged());
+                    
+                    //setando quantidade de commits que cada arquivo teve
+                    if(nomesArquivos.containsKey(listarquivo.get(i).getFileName())){
+                        int qtdmod = nomesArquivos.get(listarquivo.get(i).getFileName());
+                        nomesArquivos.replace(listarquivo.get(i).getFileName(), qtdmod+1);
+                    }else{
+                        nomesArquivos.put(listarquivo.get(i).getFileName(), 1);
+                    }
                 }
                 
                 System.out.println("    ");
@@ -154,20 +163,21 @@ public class BuscarServlet extends HttpServlet {
             }
              
         }
-
+        
+        System.out.println("PullRequests");
         //Todos os pull request de um repositório, commit no pull e arquivos modificados no pull
         //Atencao: int number é o id.
         //state: open, close e all no estado do pull request
-        /*for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample, "open")){
+        /*for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample2, "open")){
             System.out.println("Date open: " + pullreq.getCreatedAt());
             System.out.println("Date close: " + pullreq.getClosedAt());
             System.out.println("Name:" + pullreq.getTitle());
             
-            List<RepositoryCommit> pullcommits = servicePullRequest.getCommits(repoExample, pullreq.getNumber());
+            List<RepositoryCommit> pullcommits = servicePullRequest.getCommits(repoExample2, pullreq.getNumber());
             System.out.println("Numero de commits: " + pullcommits.size());
             
             //arquivos modificados no pull
-            List<CommitFile> commitfile = servicePullRequest.getFiles(repoExample, pullreq.getNumber());
+            List<CommitFile> commitfile = servicePullRequest.getFiles(repoExample2, pullreq.getNumber());
             for(int i = 0; i < commitfile.size(); i++){
                 CommitFile c = commitfile.get(i);
                 System.out.println("Name: " + c.getFilename() + " |" + "Linha modificada: " + c.getChanges());
@@ -175,12 +185,15 @@ public class BuscarServlet extends HttpServlet {
             }
         }*/
         System.out.println("Commits:" + count);
-        //for (String key : nomesArquivos.keySet()) {
+        
+        //printando qtde de commits que cada arquivo foi modificado
+        for (String key : nomesArquivos.keySet()) {
                       
-                      //Capturamos o valor a partir da chave
-          //            int value = nomesArquivos.get(key);
-            ///          System.out.println(key + " = " + value);
-        //}
+            //Capturamos o valor a partir da chave
+            int value = nomesArquivos.get(key);
+            System.out.println(key + " = " + value);
+        }
+        
         //É possivel pegar todas as modificacoes no pull request? ou somente na lista de commits
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }
