@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -25,6 +26,7 @@ import org.eclipse.egit.github.core.Commit;
 import org.eclipse.egit.github.core.CommitFile;
 import org.eclipse.egit.github.core.CommitStatus;
 import org.eclipse.egit.github.core.CommitUser;
+import org.eclipse.egit.github.core.Issue;
 import org.eclipse.egit.github.core.PullRequest;
 import org.eclipse.egit.github.core.Repository;
 import org.eclipse.egit.github.core.RepositoryCommit;
@@ -81,30 +83,31 @@ public class BuscarServlet extends HttpServlet {
         Date dateinicio = new Date();
         Date datefinal = new Date();
             try {
-                dateinicio = sdf.parse("2015-12-05");
-                datefinal = sdf.parse("2015-12-09");
+                dateinicio = sdf.parse("2016-10-14");
+                datefinal = sdf.parse("2016-10-31");
             } catch (ParseException ex) {
                 Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
             
         String op = request.getParameter("op"); //nome do botao submit
-        String name = request.getParameter("namerepo");//pegar parametro nome do jsp
-        String password = request.getParameter("idrepo");//pegar parametro password do jsp
-        System.out.println(name + "----" + password);
+        String nameuser = request.getParameter("namerepo");//pegar parametro nome do jsp
+        String nameproject = request.getParameter("idrepo");//pegar parametro password do jsp
+        System.out.println(nameuser + "----" + nameproject);
         
+        String projectkohsuke = nameuser + "/" + nameproject;
         //Api egit.core
         GitHubClient client = new GitHubClient();
-        client.setOAuth2Token("d1f33866670f481faeb9d2b29e95a0889cf8344d");
+        client.setOAuth2Token("7fd0f4907677951b9fff94a7dedc2982c0b45c7e");
         
         CommitService serviceCommit = new CommitService(client);
         RepositoryService service = new RepositoryService(client);
         PullRequestService servicePullRequest = new PullRequestService(client);
-        IssueService serviceissue = new IssueService(client);
-        
+        IssueService serviceIssue = new IssueService(client);
         
         //API Kohsuke segunda API
-        GitHub github = GitHub.connectUsingOAuth("d1f33866670f481faeb9d2b29e95a0889cf8344d");
-        GHRepository repo = github.getRepository("TiagoUmemura/Algoritmo-de-Djkistra-em-Java");
+        GitHub github = GitHub.connectUsingOAuth("7fd0f4907677951b9fff94a7dedc2982c0b45c7e");
+        //GHRepository repo = github.getRepository("TiagoUmemura/Algoritmo-de-Djkistra-em-Java");
+        GHRepository repo = github.getRepository(projectkohsuke);
         /*GHCommit commit2 = repo.getCommit("990ed8363c6a2b432ea5ef3b732abcae28ec194e");
         List<GHCommit.File> listarquivos = commit2.getFiles();
         for(int i = 0; i < listarquivos.size(); i++){
@@ -112,43 +115,66 @@ public class BuscarServlet extends HttpServlet {
             System.out.println("linhas modificadas: " + listarquivos.get(i).getLinesChanged());
         }*/
         
+        String nameProject2 = nameuser + "-" + nameproject;
+        DAO.addProject(nameProject2);
         //escolhendo repositrio egit
         //Repository repoExample = service.getRepository("una", "CSSgram");
         Repository repoExample = service.getRepository("TiagoUmemura", "Algoritmo-de-Djkistra-em-Java");
-        Repository repoExample2 = service.getRepository("una", "CSSgram");
-        
-        //Todos os repositorios de um usuário
-        //for (Repository repo : service.getRepositories("TiagoUmemura")){
-            //System.out.println(repo.getName() + " Watchers: " + repo.getWatchers());
-            //for(RepositoryCommit commit : serviceCommit.getCommits(repo)){
-                //System.out.println("Sha commit:" + commit.getSha());
-            //}
-        //}
+        Repository repoExample2 = service.getRepository(nameuser, nameproject);
         
         //date está no User commiter (quando é integrado no master) e User author (quando é feito o commit)
         //todos os sha dos commits de um repositorio
-        for(RepositoryCommit commit : serviceCommit.getCommits(repoExample)){
+        for(RepositoryCommit commit : serviceCommit.getCommits(repoExample2)){
             //System.out.println("Sha commit: " + commit.getSha());
             Commit commitdate = commit.getCommit();//pegar o tipo commit do repositoryCommit
             CommitUser commituser = commitdate.getCommitter();//pegar o commiter
             //System.out.println("date: " + commituser.getDate());//no commiter pegar a data
+            //commitdate.getMessage();
             
-            //System.out.println("teste" + commit.getParents().size());
+            //cherry pick quando author e null tem cherry pick
+            //System.out.println("teste" + commit.getAuthor().getLogin());
             
             //pegar commit entre as datas definidas
-            if(commituser.getDate().after(dateinicio) && commituser.getDate().before(datefinal)){
+            //if(commituser.getDate().after(dateinicio) && commituser.getDate().before(datefinal)){
                 System.out.println("Sha commit: " + commit.getSha());
                 System.out.println("date: " + commituser.getDate());//no commiter pegar a data
+                String datecommit = null;
+
+                datecommit = sdf.format(commituser.getDate());
                 
-                GHCommit commitarq = repo.getCommit(commit.getSha());
+                //chamar DAO
+                System.out.println("date2: " + datecommit);
+                System.out.println("login: " + commit.getCommit().getCommitter().getName());
+                System.out.println("URL: " + commit.getUrl());
+                System.out.println("Message: " + commit.getCommit().getMessage());//testar
+                DAO.addCommit(nameProject2, commit.getCommit().getMessage(), datecommit, commit.getSha(), commit.getCommit().getAuthor().getName(), commit.getCommit().getUrl());
+                
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                //GHCommit API kousuke
+                GHCommit commitarq = repo.getCommit(commit.getSha());//passando SHA de uma API para outra
                 List<GHCommit.File> listarquivo = commitarq.getFiles();
                 for(int i = 0; i < listarquivo.size(); i++){
-                    System.out.println("nome do arquivo: " + listarquivo.get(i).getFileName());
-                    System.out.println("linhas modificadas: " + listarquivo.get(i).getLinesChanged());
-                    
+                    //System.out.println("nome do arquivo: " + listarquivo.get(i).getFileName());
+                    //System.out.println("linhas modificadas: " + listarquivo.get(i).getLinesChanged());
+                    System.out.println("Arquivos");
+                    DAO.addFile(listarquivo.get(i).getFileName(), listarquivo.get(i).getLinesChanged(), listarquivo.get(i).getLinesDeleted(), listarquivo.get(i).getLinesAdded(), commit.getSha());
                     //setando quantidade de commits que cada arquivo teve
+                    
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
                     if(nomesArquivos.containsKey(listarquivo.get(i).getFileName())){
+                        //qtd mod quantidade de vezes que o arquivo ja foi modificado
                         int qtdmod = nomesArquivos.get(listarquivo.get(i).getFileName());
+                        //qtd de vezes modificados + 1
                         nomesArquivos.replace(listarquivo.get(i).getFileName(), qtdmod+1);
                     }else{
                         nomesArquivos.put(listarquivo.get(i).getFileName(), 1);
@@ -160,30 +186,89 @@ public class BuscarServlet extends HttpServlet {
                 
                 //contador que conta numero de commits
                 count++;
-            }
+            //}
              
         }
         
-        System.out.println("PullRequests");
+        //System.out.println("PullRequests");
         //Todos os pull request de um repositório, commit no pull e arquivos modificados no pull
         //Atencao: int number é o id.
         //state: open, close e all no estado do pull request
-        /*for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample2, "open")){
-            System.out.println("Date open: " + pullreq.getCreatedAt());
-            System.out.println("Date close: " + pullreq.getClosedAt());
+        for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample2, "close")){
+            System.out.println("Date open: " + sdf.format(pullreq.getCreatedAt()));
+            if(pullreq.getClosedAt() != null){
+            System.out.println("Date close: " + sdf.format(pullreq.getClosedAt()));
+            }
             System.out.println("Name:" + pullreq.getTitle());
+            System.out.println("Author:" + pullreq.getUser().getLogin());
             
+            
+            Issue issue = serviceIssue.getIssue(repoExample2, pullreq.getNumber());
+            System.out.println("numComments: " + issue.getComments());
+            
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            System.out.println("State: " + pullreq.getState());
+            System.out.println("");
+            
+           
             List<RepositoryCommit> pullcommits = servicePullRequest.getCommits(repoExample2, pullreq.getNumber());
             System.out.println("Numero de commits: " + pullcommits.size());
             
+            //https://api.github.com/repos/twbs/bootstrap/issues/24114/comments
+            //pullreq.getHead().getSha();
+            DAO.addPullRequest(pullreq.getTitle(), pullreq.getUser().getLogin(), pullreq.getNumber(), pullreq.getState(), issue.getComments(), sdf.format(pullreq.getCreatedAt()), sdf.format(pullreq.getClosedAt()), nameProject2);
+            
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            //servicePullRequest.getcomments para pegar os comentarios passar repo name e id getNumber 
+            //servicePullRequest.getComments(repoExample, pullreq.getnumber);
             //arquivos modificados no pull
             List<CommitFile> commitfile = servicePullRequest.getFiles(repoExample2, pullreq.getNumber());
             for(int i = 0; i < commitfile.size(); i++){
                 CommitFile c = commitfile.get(i);
-                System.out.println("Name: " + c.getFilename() + " |" + "Linha modificada: " + c.getChanges());
                 
+                DAO.addFilesPullRequest(pullreq.getNumber(), c.getFilename(), c.getAdditions(), c.getDeletions(), c.getChanges(), servicePullRequest.getComments(repoExample2, pullreq.getNumber()).size(), nameProject2);
+                //System.out.println("Name: " + c.getFilename() + " |" + "Linha modificada: " + c.getChanges());
+                //pullrequest file: pullreq number, filename, addittions, deletions, changes
+                try {
+                TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }*/
+            
+            //pegar commits do pullRequst - PullReq .number utilizado para pegar tanto commits quanto files
+            System.out.println("Commits do pull ***");
+            List<RepositoryCommit> commitspull = servicePullRequest.getCommits(repoExample2, pullreq.getNumber());
+            for(int i = 0; i < commitspull.size(); i++){
+                
+                RepositoryCommit rc = commitspull.get(i);
+                Commit c = rc.getCommit();
+                
+                System.out.println("Pullreq commit sha: " + rc.getSha());
+                System.out.println("Pullreq commit author: " + c.getAuthor().getName());
+                System.out.println("Pullreq commit date: " + sdf.format(c.getAuthor().getDate()));
+                System.out.println("Pullreq commit number: " + pullreq.getNumber());
+                System.out.println("Pullreq commit project: " + nameProject2);
+                
+                DAO.addCommitPullRequest(rc.getSha(), c.getAuthor().getName(), sdf.format(c.getAuthor().getDate()), pullreq.getNumber(), nameProject2, c.getMessage(), c.getUrl());
+                
+                try {
+                TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
         System.out.println("Commits:" + count);
         
         //printando qtde de commits que cada arquivo foi modificado
@@ -194,7 +279,6 @@ public class BuscarServlet extends HttpServlet {
             System.out.println(key + " = " + value);
         }
         
-        //É possivel pegar todas as modificacoes no pull request? ou somente na lista de commits
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }
 
