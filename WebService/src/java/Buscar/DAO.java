@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import modelo.Commit;
 import modelo.File;
+import modelo.Project;
 import modelo.PullRequest;
 
 /**
@@ -28,6 +29,39 @@ public class DAO {
     private static final String driver = "com.mysql.jdbc.Driver";
     private static final String userName = "root";
     private static final String password = "root";
+    
+    public static List getProject() {
+
+        Connection conexao = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String returnString = "";
+        List<Project> lista = new ArrayList<Project>();
+        
+        try {
+            Class.forName(driver).newInstance();
+            conexao = DriverManager.getConnection(url + dbName, userName, password);
+            Statement statement = conexao.createStatement();
+            String sql = "SELECT * FROM Project";
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                String nome = rs.getString("nameProject");
+                
+                
+                Project p = new Project(nome);
+                //Commit c = new Commit("a","a","a","a","a");
+                lista.add(p);
+                
+            }
+
+            return lista;
+        } catch (Exception ex) {
+            System.out.println("Erro : " + ex.getMessage());
+            return lista;
+        }
+    }
     
     public static void addProject(String nameProject) {
         Connection conexao = null;

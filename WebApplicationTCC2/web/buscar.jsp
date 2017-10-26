@@ -18,8 +18,21 @@
         <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
 
     </head>
-    <body>
-        <div class="container text-center">
+    <body onload="preencheCombo()">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+              <div class="navbar-header">
+                <a class="navbar-brand" href="#">WebSiteName</a>
+              </div>
+              <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#" onclick="shownav1()">Projeto 1</a></li>
+                <li><a href="#" onclick="shownav2()">Projeto 2</a></li>
+              </ul>
+            </div>
+        </nav>
+        
+        <div class="container text-center" style="margin-top:50px">
         <h1>Github Data</h1>
         <form action="BuscarServlet" method="POST">
             <h1>Search</h1>
@@ -32,33 +45,32 @@
         <!-- 
         <canvas id="myChart" width="400" height="400"></canvas>
         -->
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_combo">
             <label for="inputdefault">Projeto:</label>
              <select id="projeto">
-                <option value="HearthSim-Hearthstone-Deck-Tracker">HearthSim-Hearthstone-Deck-Tracker</option>
-                <option value="Una-CSSgram">Una-CSSgram</option>
+                
               </select> 
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_data_inicial">
             <label for="inputdefault">Data Inicial:</label>
             <input type="text" class="form-control" id="dateStart" placeholder="Data inicial" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_data_final">
             <label for="inputdefault">Data final:</label>
             <input type="text" class="form-control" id="dateEnd" placeholder="Data final" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_button">
                 <button type="button" class="btn btn-default" onclick="gerarVisualizacao2()">Calcular</button>
         </div>
 
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_treemap">
             <div id="chart_div" style="height: 500px;"></div>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_chart_curve">
             <div id="curve_chart" style="height: 500px"></div>
         </div>
         
@@ -67,16 +79,16 @@
             <input type="text" class="form-control" id="numCommit" placeholder="commit" aria-describedby="basic-addon1">
         </div>-->
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="report">
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
             <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span></p>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="filter">
             <input type="text"class="form-control" id="myInput" onkeyup="myFilter()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" style="height:120px; overflow:auto;">
+        <div class="col-md-12" style="height:120px; overflow:auto;" id="div_table">
          <table id="teste2" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -89,36 +101,35 @@
          </table>
         </div>
         
-        
+        <br>
         <!-- Treemap 2 -->
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_combo2" style="display: none;">
             <label for="inputdefault">Projeto:</label>
              <select id="projeto2">
-                <option value="HearthSim-Hearthstone-Deck-Tracker">HearthSim-Hearthstone-Deck-Tracker</option>
-                <option value="Una-CSSgram">Una-CSSgram</option>
+                
               </select> 
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_data_inicial2" style="display: none;">
             <label for="inputdefault">Data Inicial:</label>
             <input type="text" class="form-control" id="dateStart2" placeholder="Data inicial" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_data_final2" style="display: none;">
             <label for="inputdefault">Data final:</label>
             <input type="text" class="form-control" id="dateEnd2" placeholder="Data final" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4">
+        <div class="col-md-4" id="div_button2" style="display: none;">
                 <button type="button" class="btn btn-default" onclick="gerarVisualizacao3()">Calcular</button>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_treemap2" style="display: none;">
             <div id="chart_div2" style="height: 500px;"></div>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="div_chart_curve2" style="display: none;">
             <div id="curve_chart2" style="height: 500px"></div>
         </div>
         
@@ -129,16 +140,16 @@
         </div>
         -->
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="report2" style="display: none;">
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
             <p>O numero total de commits no período é <span id="numbercommit2"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest2"></span></p>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" id="filter2" style="display: none;">
             <input type="text" class="form-control" id="myInput2" onkeyup="myFilter2()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" style="height:120px; overflow:auto;">
+        <div class="col-md-12" id="div_table2" style="height:120px; overflow:auto; display: none;" >
          <table id="table2" cellspacing="0" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -152,11 +163,11 @@
         </div>
         
         
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: none;">
         <div id="myDiv" style="width: 900px; height: 500px;"></div>
         </div>
         
-        <div class="col-md-12">
+        <div class="col-md-12" style="display: none;">
         <div id="myDiv2" style="width: 900px; height: 500px;"></div>
         </div>
         
@@ -880,6 +891,94 @@
     ];
 
     Plotly.newPlot('myDiv2', data);
+    
+    //funcoes para controlar as abas (navbar)
+    function shownav2(){
+        document.getElementById("div_combo2").style.display = "block";
+        document.getElementById("div_data_inicial2").style.display = "block";
+        document.getElementById("div_data_final2").style.display = "block";
+        document.getElementById("div_button2").style.display = "block";
+        document.getElementById("div_treemap2").style.display = "block";
+        document.getElementById("div_chart_curve2").style.display = "block";
+        document.getElementById("report2").style.display = "block";
+        document.getElementById("filter2").style.display = "block";
+        document.getElementById("div_table2").style.display = "block";
+        
+        document.getElementById("div_combo").style.display = "none";
+        document.getElementById("div_data_inicial").style.display = "none";
+        document.getElementById("div_data_final").style.display = "none";
+        document.getElementById("div_button").style.display = "none";
+        document.getElementById("div_treemap").style.display = "none";
+        document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("report").style.display = "none";
+        document.getElementById("filter").style.display = "none";
+        document.getElementById("div_table").style.display = "none";
+    }
+    
+    function shownav1(){
+        document.getElementById("div_combo2").style.display = "none";
+        document.getElementById("div_data_inicial2").style.display = "none";
+        document.getElementById("div_data_final2").style.display = "none";
+        document.getElementById("div_button2").style.display = "none";
+        document.getElementById("div_treemap2").style.display = "none";
+        document.getElementById("div_chart_curve2").style.display = "none";
+        document.getElementById("report2").style.display = "none";
+        document.getElementById("filter2").style.display = "none";
+        document.getElementById("div_table2").style.display = "none";
+        
+        document.getElementById("div_combo").style.display = "block";
+        document.getElementById("div_data_inicial").style.display = "block";
+        document.getElementById("div_data_final").style.display = "block";
+        document.getElementById("div_button").style.display = "block";
+        document.getElementById("div_treemap").style.display = "block";
+        document.getElementById("div_chart_curve").style.display = "block";
+        document.getElementById("report").style.display = "block";
+        document.getElementById("filter").style.display = "block";
+        document.getElementById("div_table").style.display = "block";
+    }
+    
+    function preencheCombo(){
+        var urlProject = 'http://localhost:9090/WebService/webresources/webservicegit/project/getproject';
+        var listProject;
+        
+        $.ajax({
+               // GET is the default type, no need to specify it
+               type: 'GET',
+               url: urlProject,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+                    //data is the object that youre after, handle it here
+
+                    listProject = data;
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+        var select1 = document.getElementById('projeto');
+        var select2 = document.getElementById('projeto2');
+        
+        for (i = 0; i < listProject.length; i++) { 
+            var name = listProject[i].nameProject;
+            console.log(name);
+            
+            var opt = document.createElement('option');
+            opt.text = name;
+            
+            var opt2 = document.createElement('option');
+            opt2.text = name;
+            select1.add(opt);    
+            select2.add(opt2);    
+                
+        }
+           
+    }
+    
     </script>
     <!-- Tabela que lista arquivos e mostra as metricas desses arquivos: entropia, numero de defeitos etc (tcc)
         Um texto com numero de commits no periodo, valor da entropia media, valor de defeito médio, defeito maximo, numero de author

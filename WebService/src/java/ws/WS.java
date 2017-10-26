@@ -23,6 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import modelo.Commit;
 import modelo.File;
+import modelo.Project;
 import modelo.PullRequest;
 
 /**
@@ -51,6 +52,19 @@ public class WS {
     public String getJson() {
         //TODO return proper representation object
         return "teste";
+    }
+    
+    @GET
+    @Produces("application/json")
+    @Path("project/getproject")
+    public String getProjects() {
+        //TODO return proper representation object
+        List<Project> lista = new ArrayList<Project>(); 
+        
+        lista = DAO.getProject();
+        
+        Gson g = new Gson();
+        return g.toJson(lista);
     }
     
     @GET
