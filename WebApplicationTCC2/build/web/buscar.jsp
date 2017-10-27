@@ -70,6 +70,10 @@
             <div id="chart_div" style="height: 500px;"></div>
         </div>
         
+        <div class="col-md-12" id="div_treemap_files">
+            <div id="chart_div_file" style="height: 500px;"></div>
+        </div>
+        
         <div class="col-md-12" id="div_chart_curve">
             <div id="curve_chart" style="height: 500px"></div>
         </div>
@@ -127,6 +131,10 @@
         
         <div class="col-md-12" id="div_treemap2" style="display: none;">
             <div id="chart_div2" style="height: 500px;"></div>
+        </div>
+        
+        <div class="col-md-12" id="div_treemap_files2" style="display: none;">
+            <div id="chart_div_file2" style="height: 500px;"></div>
         </div>
         
         <div class="col-md-12" id="div_chart_curve2" style="display: none;">
@@ -335,13 +343,19 @@
                         ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
                         ['Project',    '',                 0,                               0]
                       ];
+                      
+            //array treemap para dividir por arquivos
+            var treeMapArrayFiles = [
+                        ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
+                        ['Project',    '',                 0,                               0]
+                      ];
             
             var mapFiles = {};//numero de vezes que o arquivo foi commitado
             var mapFilesAdded = {}//numero de linhas adicionadas no total
             var mapFilesRemoved = {} // numero de linhas removidas
             var mapFilesChanged = {} //numero de linhas modificadas
             
-            //arquivos (files)
+            //Contar quantas vezes os arquivos (files) foram modificados
             //Contagem de linhas modificadas e quantas vezes o arquivo foi comitado
             for (i = 0; i < returnedJson.length; i++) { 
                 if(returnedJson[i].nameFile in mapFiles){
@@ -392,7 +406,7 @@
             
             //Inserindo os arquivos no array que ira gerar o treemap
             for (var name in mapFiles) {
-                //treeMapArray.push([name, 'Project',mapFiles[name],mapFiles[name]]);
+                treeMapArrayFiles.push([name, 'Project',mapFiles[name],mapFiles[name]]);
                 
                 var table = document.getElementById("teste2");
                 var row = table.insertRow(table.rows.length);
@@ -468,6 +482,26 @@
               });
 
             }
+            
+             //treemap by files
+            google.charts.load('current', {'packages':['treemap']});
+            google.charts.setOnLoadCallback(drawChartFiles);
+            function drawChartFiles() {
+              var data = google.visualization.arrayToDataTable(treeMapArrayFiles);
+
+              tree = new google.visualization.TreeMap(document.getElementById('chart_div_file'));
+
+              tree.draw(data, {
+                minColor: '#f00',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true
+              });
+
+            }
+            
             //fim treemap
             
             //timeline grafico
@@ -648,7 +682,14 @@
            var pulltext2 = document.getElementById('pullrequest2');
            pulltext2.innerHTML = returnedJsonPull.length;
            
+           //array treemap para dividir por pacotes
            var treeMapArray = [
+                        ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
+                        ['Project',    '',                 0,                               0]
+                      ];
+            
+            //array treemap para dividir por arquivos
+            var treeMapArrayFiles = [
                         ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
                         ['Project',    '',                 0,                               0]
                       ];
@@ -709,7 +750,7 @@
             
             
             for (var name in mapFiles) {
-                //treeMapArray.push([name, 'Project',mapFiles[name],mapFiles[name]]);
+                treeMapArrayFiles.push([name, 'Project',mapFiles[name],mapFiles[name]]);
                 
                 var table = document.getElementById("table2");
                 var row = table.insertRow(table.rows.length);
@@ -736,7 +777,8 @@
                 
                 if(path.length > 1){
                     for(i = 0; i < path.length; i++){
-
+                        
+                        //armazenar o pai do subcaminho seguinte
                         pathparent = pathaux;
 
                         if(i != 0){
@@ -744,7 +786,8 @@
                         }else{
                             pathaux = path[i];
                         }
-
+                        
+                        //se o subcaminho ja existe nao faz nada, operação de soma apenas para contagem
                         if(pathaux in mapAllPath){
                             mapAllPath[pathaux] = mapAllPath[pathaux] + 1;
                         }else{
@@ -772,6 +815,25 @@
               var data = google.visualization.arrayToDataTable(treeMapArray);
 
               tree = new google.visualization.TreeMap(document.getElementById('chart_div2'));
+
+              tree.draw(data, {
+                minColor: '#f00',
+                midColor: '#ddd',
+                maxColor: '#0d0',
+                headerHeight: 15,
+                fontColor: 'black',
+                showScale: true
+              });
+
+            }
+            
+             //treemap by files
+            google.charts.load('current', {'packages':['treemap']});
+            google.charts.setOnLoadCallback(drawChartFiles);
+            function drawChartFiles() {
+              var data = google.visualization.arrayToDataTable(treeMapArrayFiles);
+
+              tree = new google.visualization.TreeMap(document.getElementById('chart_div_file2'));
 
               tree.draw(data, {
                 minColor: '#f00',
@@ -903,7 +965,8 @@
         document.getElementById("report2").style.display = "block";
         document.getElementById("filter2").style.display = "block";
         document.getElementById("div_table2").style.display = "block";
-        
+        document.getElementById("div_treemap_files2").style.display = "block";
+         
         document.getElementById("div_combo").style.display = "none";
         document.getElementById("div_data_inicial").style.display = "none";
         document.getElementById("div_data_final").style.display = "none";
@@ -913,6 +976,7 @@
         document.getElementById("report").style.display = "none";
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
+        document.getElementById("div_treemap_files").style.display = "none";
     }
     
     function shownav1(){
@@ -925,6 +989,7 @@
         document.getElementById("report2").style.display = "none";
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
+        document.getElementById("div_treemap_files2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "block";
         document.getElementById("div_data_inicial").style.display = "block";
@@ -935,6 +1000,7 @@
         document.getElementById("report").style.display = "block";
         document.getElementById("filter").style.display = "block";
         document.getElementById("div_table").style.display = "block";
+        document.getElementById("div_treemap_files").style.display = "block";
     }
     
     function preencheCombo(){
