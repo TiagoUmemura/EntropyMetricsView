@@ -25,7 +25,7 @@
                 <a class="navbar-brand" href="#">WebSiteName</a>
               </div>
               <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#" onclick="showhome()">Home</a></li>
                 <li><a href="#" onclick="shownav1()">Projeto 1</a></li>
                 <li><a href="#" onclick="shownav2()">Projeto 2</a></li>
               </ul>
@@ -33,48 +33,56 @@
         </nav>
         
         <div class="container text-center" style="margin-top:50px">
-        <h1>Github Data</h1>
-        <form action="BuscarServlet" method="POST">
-            <h1>Search</h1>
-            <input type="text" value="" name="namerepo" placeholder="Usuario" id="namerepo" required/>
-            <input type="text" name="idrepo" value="" placeholder="Nome do projeto" id="idrepo" required/>
-            <input type="submit" value="Buscar" name="op"/>
-        </form>
+            <div id="div_search">
+                <h1>Github Data</h1>
+                <form action="BuscarServlet" method="POST">
+                    <h1>Search</h1>
+                    <input type="text" value="" name="namerepo" placeholder="Usuario" id="namerepo" required/>
+                    <input type="text" name="idrepo" value="" placeholder="Nome do projeto" id="idrepo" required/>
+                    <input type="submit" value="Buscar" name="op"/>
+                </form>
+            </div>
         
         <hr>
         <!-- 
         <canvas id="myChart" width="400" height="400"></canvas>
         -->
-        <div class="col-md-12" id="div_combo">
+        <div class="col-md-12" id="div_combo" style="display: none;">
             <label for="inputdefault">Projeto:</label>
              <select id="projeto">
                 
               </select> 
         </div>
         
-        <div class="col-md-4" id="div_data_inicial">
+        <div class="col-md-4" id="div_data_inicial" style="display: none;">
             <label for="inputdefault">Data Inicial:</label>
             <input type="text" class="form-control" id="dateStart" placeholder="Data inicial" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4" id="div_data_final">
+        <div class="col-md-4" id="div_data_final" style="display: none;">
             <label for="inputdefault">Data final:</label>
             <input type="text" class="form-control" id="dateEnd" placeholder="Data final" aria-describedby="basic-addon1">
         </div>
         
-        <div class="col-md-4" id="div_button">
-                <button type="button" class="btn btn-default" onclick="gerarVisualizacao2()">Calcular</button>
+        <div class="col-md-4" id="div_button" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="gerarVisualizacao2()">Calcular</button>
         </div>
 
-        <div class="col-md-12" id="div_treemap">
+        <div class="col-md-12" id="div_treemap" style="display: none;">
             <div id="chart_div" style="height: 500px;"></div>
         </div>
         
-        <div class="col-md-12" id="div_treemap_files">
+        <div class="col-md-12" id="div_treemap_files" style="display: none;">
             <div id="chart_div_file" style="height: 500px;"></div>
         </div>
         
-        <div class="col-md-12" id="div_chart_curve">
+        <div class="col-md-12" id="div_button_treemap" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeTreemap()">Pacote/Arquivos</button>
+        </div>
+        
+        <div class="col-md-12" id="div_chart_curve" style="display: none;">
             <div id="curve_chart" style="height: 500px"></div>
         </div>
         
@@ -83,16 +91,16 @@
             <input type="text" class="form-control" id="numCommit" placeholder="commit" aria-describedby="basic-addon1">
         </div>-->
         
-        <div class="col-md-12" id="report">
+        <div class="col-md-12" id="report" style="display: none;">
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
             <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span></p>
         </div>
         
-        <div class="col-md-12" id="filter">
+        <div class="col-md-12" id="filter" style="display: none;">
             <input type="text"class="form-control" id="myInput" onkeyup="myFilter()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" style="height:120px; overflow:auto;" id="div_table">
+        <div class="col-md-12" style="height:120px; overflow:auto;display: none;" id="div_table">
          <table id="teste2" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -105,7 +113,7 @@
          </table>
         </div>
         
-        <br>
+        
         <!-- Treemap 2 -->
         
         <div class="col-md-12" id="div_combo2" style="display: none;">
@@ -126,7 +134,8 @@
         </div>
         
         <div class="col-md-4" id="div_button2" style="display: none;">
-                <button type="button" class="btn btn-default" onclick="gerarVisualizacao3()">Calcular</button>
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="gerarVisualizacao3()">Calcular</button>
         </div>
         
         <div class="col-md-12" id="div_treemap2" style="display: none;">
@@ -135,6 +144,11 @@
         
         <div class="col-md-12" id="div_treemap_files2" style="display: none;">
             <div id="chart_div_file2" style="height: 500px;"></div>
+        </div>
+        
+        <div class="col-md-12" id="div_button_treemap2" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeTreemap2()">Pacote/Arquivos</button>
         </div>
         
         <div class="col-md-12" id="div_chart_curve2" style="display: none;">
@@ -464,7 +478,10 @@
                 }
             }
             
-
+            //Inicio treemap
+            //se a div estiver display none, treemap apresenta problemas
+            document.getElementById("div_treemap").style.display = "block";
+            
             google.charts.load('current', {'packages':['treemap']});
             google.charts.setOnLoadCallback(drawChart);
             function drawChart() {
@@ -483,13 +500,17 @@
 
             }
             
-             //treemap by files
+            //treemap by files
+            document.getElementById("div_treemap_files").style.display = "block"; 
+            
             google.charts.load('current', {'packages':['treemap']});
             google.charts.setOnLoadCallback(drawChartFiles);
+            
             function drawChartFiles() {
               var data = google.visualization.arrayToDataTable(treeMapArrayFiles);
 
               tree = new google.visualization.TreeMap(document.getElementById('chart_div_file'));
+              google.visualization.events.addListener(tree, 'ready', myReadyHandler);
 
               tree.draw(data, {
                 minColor: '#f00',
@@ -499,8 +520,12 @@
                 fontColor: 'black',
                 showScale: true
               });
-
+              
+              function myReadyHandler(){
+                document.getElementById("div_treemap_files").style.display = "none"; 
+              }
             }
+            
             
             //fim treemap
             
@@ -572,7 +597,6 @@
             }
             //fim timeline grafico
             
-
         }
     
         </script>
@@ -808,7 +832,9 @@
                     treeMapArray.push([name, 'Project',mapFiles[name],mapFiles[name]]);
                 }
             }
-
+            
+            document.getElementById("div_treemap2").style.display = "block";
+            
             google.charts.load('current', {'packages':['treemap']});
             google.charts.setOnLoadCallback(drawChart);
             function drawChart() {
@@ -828,12 +854,16 @@
             }
             
              //treemap by files
+             //se estiver no display none treemap apresenta problemas
+            document.getElementById("div_treemap_files2").style.display = "block";
+            
             google.charts.load('current', {'packages':['treemap']});
             google.charts.setOnLoadCallback(drawChartFiles);
             function drawChartFiles() {
               var data = google.visualization.arrayToDataTable(treeMapArrayFiles);
 
               tree = new google.visualization.TreeMap(document.getElementById('chart_div_file2'));
+              google.visualization.events.addListener(tree, 'ready', myReadyHandler);
 
               tree.draw(data, {
                 minColor: '#f00',
@@ -843,6 +873,10 @@
                 fontColor: 'black',
                 showScale: true
               });
+              
+              function myReadyHandler(){
+                document.getElementById("div_treemap_files2").style.display = "none"; 
+              }
 
             }
             //Fim treemap
@@ -956,17 +990,13 @@
     
     //funcoes para controlar as abas (navbar)
     function shownav2(){
-        document.getElementById("div_combo2").style.display = "block";
-        document.getElementById("div_data_inicial2").style.display = "block";
-        document.getElementById("div_data_final2").style.display = "block";
-        document.getElementById("div_button2").style.display = "block";
-        document.getElementById("div_treemap2").style.display = "block";
-        document.getElementById("div_chart_curve2").style.display = "block";
-        document.getElementById("report2").style.display = "block";
-        document.getElementById("filter2").style.display = "block";
-        document.getElementById("div_table2").style.display = "block";
-        document.getElementById("div_treemap_files2").style.display = "block";
-         
+        var optionTreemapDisplay;
+        if( document.getElementById("div_treemap_files").style.display == "none"){
+            optionTreemapDisplay = "showByPackage";
+        }else{
+            optionTreemapDisplay = "showByFiles";
+        }
+        
         document.getElementById("div_combo").style.display = "none";
         document.getElementById("div_data_inicial").style.display = "none";
         document.getElementById("div_data_final").style.display = "none";
@@ -977,9 +1007,35 @@
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
         document.getElementById("div_treemap_files").style.display = "none";
+        document.getElementById("div_search").style.display = "none";
+        document.getElementById("div_button_treemap").style.display = "none";
+        
+        document.getElementById("div_combo2").style.display = "block";
+        document.getElementById("div_data_inicial2").style.display = "block";
+        document.getElementById("div_data_final2").style.display = "block";
+        document.getElementById("div_button2").style.display = "block";
+        document.getElementById("div_chart_curve2").style.display = "block";
+        document.getElementById("report2").style.display = "block";
+        document.getElementById("filter2").style.display = "block";
+        document.getElementById("div_table2").style.display = "block";
+        document.getElementById("div_button_treemap2").style.display = "block";
+        
+        if(optionTreemapDisplay == "showByPackage"){
+            document.getElementById("div_treemap2").style.display = "block";
+        }else{
+            document.getElementById("div_treemap_files2").style.display = "block";
+        }
+       
     }
     
     function shownav1(){
+        var optionTreemapDisplay;
+        if( document.getElementById("div_treemap_files2").style.display == "none"){
+            optionTreemapDisplay = "showByPackage";
+        }else{
+            optionTreemapDisplay = "showByFiles";
+        }
+        
         document.getElementById("div_combo2").style.display = "none";
         document.getElementById("div_data_inicial2").style.display = "none";
         document.getElementById("div_data_final2").style.display = "none";
@@ -990,17 +1046,77 @@
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
         document.getElementById("div_treemap_files2").style.display = "none";
+        document.getElementById("div_search").style.display = "none";
+        document.getElementById("div_button_treemap2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "block";
         document.getElementById("div_data_inicial").style.display = "block";
         document.getElementById("div_data_final").style.display = "block";
         document.getElementById("div_button").style.display = "block";
-        document.getElementById("div_treemap").style.display = "block";
+        document.getElementById("div_button_treemap").style.display = "block";
         document.getElementById("div_chart_curve").style.display = "block";
         document.getElementById("report").style.display = "block";
         document.getElementById("filter").style.display = "block";
         document.getElementById("div_table").style.display = "block";
-        document.getElementById("div_treemap_files").style.display = "block";
+        
+        if(optionTreemapDisplay == "showByPackage"){
+            document.getElementById("div_treemap").style.display = "block";
+        }else{
+            document.getElementById("div_treemap_files").style.display = "block";
+        }
+        
+    }
+    
+    function showhome(){
+        document.getElementById("div_search").style.display = "block";
+        
+        document.getElementById("div_combo2").style.display = "none";
+        document.getElementById("div_data_inicial2").style.display = "none";
+        document.getElementById("div_data_final2").style.display = "none";
+        document.getElementById("div_button2").style.display = "none";
+        document.getElementById("div_treemap2").style.display = "none";
+        document.getElementById("div_chart_curve2").style.display = "none";
+        document.getElementById("report2").style.display = "none";
+        document.getElementById("filter2").style.display = "none";
+        document.getElementById("div_table2").style.display = "none";
+        document.getElementById("div_treemap_files2").style.display = "none";
+        document.getElementById("div_button_treemap2").style.display = "none";
+        
+        document.getElementById("div_combo").style.display = "none";
+        document.getElementById("div_data_inicial").style.display = "none";
+        document.getElementById("div_data_final").style.display = "none";
+        document.getElementById("div_button").style.display = "none";
+        document.getElementById("div_treemap").style.display = "none";
+        document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("report").style.display = "none";
+        document.getElementById("filter").style.display = "none";
+        document.getElementById("div_table").style.display = "none";
+        document.getElementById("div_treemap_files").style.display = "none";
+        document.getElementById("div_button_treemap").style.display = "none";
+    }
+    
+    function changeTreemap(){
+        var display = document.getElementById("div_treemap").style.display;
+        if(display == "none"){
+            document.getElementById("div_treemap").style.display = 'block';
+            document.getElementById("div_treemap_files").style.display = 'none';
+        }
+        else{
+            document.getElementById("div_treemap").style.display = 'none';
+            document.getElementById("div_treemap_files").style.display = 'block';
+        }
+    }
+    
+    function changeTreemap2(){
+        var display = document.getElementById("div_treemap2").style.display;
+        if(display == "none"){
+            document.getElementById("div_treemap2").style.display = 'block';
+            document.getElementById("div_treemap_files2").style.display = 'none';
+        }
+        else{
+            document.getElementById("div_treemap2").style.display = 'none';
+            document.getElementById("div_treemap_files2").style.display = 'block';
+        }
     }
     
     function preencheCombo(){
@@ -1054,7 +1170,6 @@
     
         contar defeitos, analisar qualquer commit
     
-        
     -->
     </body>
 </html>
