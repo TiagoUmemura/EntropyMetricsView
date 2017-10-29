@@ -16,6 +16,7 @@
         <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="spearson.js"></script>
 
     </head>
     <body onload="preencheCombo()">
@@ -185,8 +186,8 @@
         </div>
         
         
-        <div class="col-md-12" style="display: none;">
-        <div id="myDiv" style="width: 900px; height: 500px;"></div>
+        <div class="col-md-12">
+        <div id="myDiv" style="height: 300px;"></div>
         </div>
         
         <div class="col-md-12" style="display: none;">
@@ -395,6 +396,7 @@
                     || message.indexOf("fix") !== -1
                     || message.indexOf("postfix") !== -1
                     || message.indexOf("prefix") !== -1
+                    || message.indexOf("fixes") !== -1
                     ){
                     
                     var shacommit = listcommit[i].sha;
@@ -953,27 +955,21 @@
     </script>
     
     <script type="text/javascript">
-      function myFunction() {
-        var table = document.getElementById("teste2");
-        var row = table.insertRow(0);
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        cell1.innerHTML = "NEW CELL1";
-        cell2.innerHTML = "NEW CELL2";
-        cell3.innerHTML = 80;
-        }
       
+      var x = [1, 1, 2, 2, 3, 4];
+      var y = [5, 2, 5, 7, 5, 8];
+      var corr = spearson.correlation.spearman(x, y);
       var data = [
       {
-        z: [[1, 20, 30, 50, 1], [20, 1, 60, 80, 30], [30, 60, 1, -10, 20]],
-        x: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        y: ['Morning', 'Afternoon', 'Evening'],
+        z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
+        x: ['Defeito','Linhas modificadas','linhas adicionadas'],
+        y: ['Entropia', 'Afternoon', 'Evening'],
         type: 'heatmap'
       }
     ];
 
     Plotly.newPlot('myDiv', data);
+    
     </script>
     
     <script type="text/javascript">
