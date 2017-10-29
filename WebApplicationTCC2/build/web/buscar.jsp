@@ -114,6 +114,10 @@
          </table>
         </div>
         
+        <div class="col-md-12" id="divHeat" style="display: none;">
+            <div id="fieldHeat" style="height: 300px;"></div>
+        </div>
+        
         
         <!-- Treemap 2 -->
         
@@ -185,13 +189,8 @@
          </table>
         </div>
         
-        
-        <div class="col-md-12">
-        <div id="myDiv" style="height: 300px;"></div>
-        </div>
-        
-        <div class="col-md-12" style="display: none;">
-        <div id="myDiv2" style="width: 900px; height: 500px;"></div>
+        <div class="col-md-12" id="divHeat2" style="display: none;">
+        <div id="fieldHeat2" style="height: 300px;"></div>
         </div>
         
         
@@ -599,6 +598,27 @@
             }
             //fim timeline grafico
             
+            //inicio heatmap utvilizar spearman
+            var arquivoEntropia = []; //array para guardar a entropia com indexes numerico para files
+            var arquivoDefeito = [];//array para guardar o numero de defeitos com indexes numerico para file
+            
+            for (var name in mapFiles) {
+                arquivoEntropia.push(mapFiles[name]);
+                arquivoDefeito.push(mapFileBug[name]);
+            }
+            
+            var corr = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var data = [
+              {
+                z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas'],
+                y: ['Entropia', 'Afternoon', 'Evening'],
+                type: 'heatmap'
+              }
+            ];
+
+          Plotly.newPlot('fieldHeat', data);
+          //Fim treemap
         }
     
         </script>
@@ -720,7 +740,7 @@
                         ['Project',    '',                 0,                               0]
                       ];
             
-            var mapFiles = {};     
+            var mapFiles = {};//armazenar entropia de cada arquivo   
             var mapFilesAdded = {};//numero de linhas adicionadas no total
             var mapFilesRemoved = {}; // numero de linhas removidas
             var mapFilesChanged = {}; //numero de linhas modificadas
@@ -950,26 +970,29 @@
               chart.draw(data, options);
             }
             //fim timeline grafico
-           
-        }
-    </script>
-    
-    <script type="text/javascript">
-      
-      var x = [1, 1, 2, 2, 3, 4];
-      var y = [5, 2, 5, 7, 5, 8];
-      var corr = spearson.correlation.spearman(x, y);
-      var data = [
-      {
-        z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
-        x: ['Defeito','Linhas modificadas','linhas adicionadas'],
-        y: ['Entropia', 'Afternoon', 'Evening'],
-        type: 'heatmap'
-      }
-    ];
+            
+            //heatmap
+            //inicio heatmap utvilizar spearman
+            var arquivoEntropia = []; //array para guardar a entropia com indexes numerico para files
+            var arquivoDefeito = [];//array para guardar o numero de defeitos com indexes numerico para file
+            
+            for (var name in mapFiles) {
+                arquivoEntropia.push(mapFiles[name]);
+                arquivoDefeito.push(mapFileBug[name]);
+            }
+            
+            var corr = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var data = [
+              {
+                z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas'],
+                y: ['Entropia', 'Afternoon', 'Evening'],
+                type: 'heatmap'
+              }
+            ];
 
-    Plotly.newPlot('myDiv', data);
-    
+          Plotly.newPlot('fieldHeat2', data);
+        }
     </script>
     
     <script type="text/javascript">
@@ -1005,6 +1028,7 @@
         document.getElementById("div_treemap_files").style.display = "none";
         document.getElementById("div_search").style.display = "none";
         document.getElementById("div_button_treemap").style.display = "none";
+        document.getElementById("divHeat").style.display = "none";
         
         document.getElementById("div_combo2").style.display = "block";
         document.getElementById("div_data_inicial2").style.display = "block";
@@ -1015,6 +1039,7 @@
         document.getElementById("filter2").style.display = "block";
         document.getElementById("div_table2").style.display = "block";
         document.getElementById("div_button_treemap2").style.display = "block";
+        document.getElementById("divHeat2").style.display = "block";
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap2").style.display = "block";
@@ -1044,6 +1069,7 @@
         document.getElementById("div_treemap_files2").style.display = "none";
         document.getElementById("div_search").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
+        document.getElementById("divHeat2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "block";
         document.getElementById("div_data_inicial").style.display = "block";
@@ -1054,6 +1080,7 @@
         document.getElementById("report").style.display = "block";
         document.getElementById("filter").style.display = "block";
         document.getElementById("div_table").style.display = "block";
+        document.getElementById("divHeat").style.display = "block";
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap").style.display = "block";
@@ -1077,6 +1104,7 @@
         document.getElementById("div_table2").style.display = "none";
         document.getElementById("div_treemap_files2").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
+        document.getElementById("divHeat2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "none";
         document.getElementById("div_data_inicial").style.display = "none";
@@ -1089,6 +1117,7 @@
         document.getElementById("div_table").style.display = "none";
         document.getElementById("div_treemap_files").style.display = "none";
         document.getElementById("div_button_treemap").style.display = "none";
+        document.getElementById("divHeat").style.display = "none";
     }
     
     function changeTreemap(){
