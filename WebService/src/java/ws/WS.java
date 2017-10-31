@@ -141,6 +141,7 @@ public class WS {
     @Path("project/getPullRequestbydate/{datainicio}/{datafim}/{nomeprojeto}")
     public String getPullRequestByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
         //TODO return proper representation object
+        //retorna os pullRequest abertos
         List<PullRequest> lista = new ArrayList<PullRequest>(); 
         
         lista = DAO.listPullRequestByDate(dataInicio, dataFim, nomeprojeto);
@@ -149,7 +150,19 @@ public class WS {
         return g.toJson(lista);
     }
     
-    
+    @GET
+    @Produces("application/json")
+    @Path("project/getPullRequestclosedbydate/{datainicio}/{datafim}/{nomeprojeto}")
+    public String getPullRequestClosedByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
+        //TODO return proper representation object
+        //retorna os pullRequest abertos
+        List<PullRequest> lista = new ArrayList<PullRequest>(); 
+        
+        lista = DAO.listPullRequestByDate(dataInicio, dataFim, nomeprojeto);
+        
+        Gson g = new Gson();
+        return g.toJson(lista);
+    }
 
     /**
      * PUT method for updating or creating an instance of WS

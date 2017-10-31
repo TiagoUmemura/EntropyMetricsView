@@ -374,4 +374,45 @@ public class DAO {
             return lista;
         }
     }
+    
+    public static List listPullRequestClosedByDate(String dataInicio, String dataFim, String nomeProjeto) {
+
+        Connection conexao = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String returnString = "";
+        List<PullRequest> lista = new ArrayList<PullRequest>();
+        
+        try {
+            Class.forName(driver).newInstance();
+            conexao = DriverManager.getConnection(url + dbName, userName, password);
+            Statement statement = conexao.createStatement();
+            String sql = "select * from pullRequest "
+                    +   "where dateClose BETWEEN '" + dataInicio + "' AND '" + dataFim + "' " 
+                    +   "and nameProject = '" + nomeProjeto + "' ";
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                String pullTitle = rs.getString("pullTitle");
+                String authorPull = rs.getString("authorPull");
+                int numberId = rs.getInt("numberId");
+                String state = rs.getString("state");
+                int numComments = rs.getInt("numComments");
+                String dateCreate = rs.getDate("dateCreate").toString();
+                String dateClose = rs.getDate("dateClose").toString();
+                String nameProject = rs.getString("nameProject");
+                
+                PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject);
+                //Commit c = new Commit("a","a","a","a","a");
+                lista.add(c);
+                
+            }
+
+            return lista;
+        } catch (Exception ex) {
+            System.out.println("Erro : " + ex.getMessage());
+            return lista;
+        }
+    }
 }

@@ -86,6 +86,15 @@
         <div class="col-md-12" id="div_chart_curve" style="display: none;">
             <div id="curve_chart" style="height: 500px"></div>
         </div>
+         
+        <div class="col-md-12" id="div_chart_curvelines" style="display: none;">
+            <div id="curve_chartlines" style="height: 500px"></div>
+        </div>
+        
+        <div class="col-md-12" id="div_button_curve" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeLineChart()">Arquivos/Linhas Alteradas</button>
+        </div>
         
         <!--<div class="input-group col-md-3">
             <span class="input-group-addon" id="basic-addon4">Total de Commits</span>
@@ -93,8 +102,10 @@
         </div>-->
         
         <div class="col-md-12" id="report" style="display: none;">
+            <p><br><br><br></p>
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
-            <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span></p>
+            <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span>
+            Número total de Pull Requests fechados no peŕiodo é <span id="pullrequestclosed"></span></p>
         </div>
         
         <div class="col-md-12" id="filter" style="display: none;">
@@ -160,6 +171,15 @@
             <div id="curve_chart2" style="height: 500px"></div>
         </div>
         
+        <div class="col-md-12" id="div_chart_curve2lines" style="display: none;">
+            <div id="curve_chart2lines" style="height: 500px"></div>
+        </div>
+        
+        <div class="col-md-12" id="div_button_curve2" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeLineChart2()">Arquivos/Linhas Alteradas</button>
+        </div>
+        
         <!--
         <div class="input-group col-md-3">
             <span class="input-group-addon" id="basic-addon7">Total de Commits</span>
@@ -168,8 +188,10 @@
         -->
         
         <div class="col-md-12" id="report2" style="display: none;">
+            <p><br><br><br></p>
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
-            <p>O numero total de commits no período é <span id="numbercommit2"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest2"></span></p>
+            <p>O numero total de commits no período é <span id="numbercommit2"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest2"></span>.
+            Número total de Pull Requests fechado no peŕiodo é <span id="pullrequestclosed2"></span></p>
         </div>
         
         <div class="col-md-12" id="filter2" style="display: none;">
@@ -250,6 +272,7 @@
             var returnedJson;
             var countCommit;
             var returnedJsonPull;
+            var returnedJsonPullClosed;
             var listcommit;
             //2016-10-14 2016-10-26
             var date1 = document.getElementById('dateStart').value;
@@ -262,6 +285,7 @@
             var urlcommitcount = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcountcommitbydate/' + date1 + '/'+ date2 +'/' + projeto;
             var urlfiles = 'http://localhost:9090/WebService/webresources/webservicegit/project/getfilesbydate/'+ date1 + '/' + date2 +'/' + projeto;
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
+            var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
             
             $.ajax({
@@ -328,6 +352,26 @@
            $.ajax({
                // GET is the default type, no need to specify it
                type: 'GET',
+               url: urlpullrequestclosed,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+                    //data is the object that youre after, handle it here
+
+                    returnedJsonPullClosed = data;
+                    //alert("Sucesso: ");
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+           $.ajax({
+               // GET is the default type, no need to specify it
+               type: 'GET',
                url: urllistcommits,
                contentType: "application/json",
                dataType : 'json',
@@ -349,8 +393,12 @@
            var countCommitText = document.getElementById('numbercommit'); 
            countCommitText.innerHTML = countCommit[0].numbercommit;
            
+           //setar pullRequests abertos
            var pulltext = document.getElementById('pullrequest');
            pulltext.innerHTML = returnedJsonPull.length;
+           
+           var pullclosedtext = document.getElementById('pullrequestclosed');
+           pullclosedtext.innerHTML = returnedJsonPullClosed.length;
            
            //cabecalho treemap array
            var treeMapArray = [
@@ -536,6 +584,10 @@
                         ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
                         
                       ];
+            var arrayLine2 = [
+                        ['Periodo', 'Linhas modificadas','linhas adicionadas', 'linhas removidas']
+                        
+                      ];
                       
             var numPeriodo = 0;
             var dInicio = new Date(date1);
@@ -553,6 +605,9 @@
                 numPeriodo = numPeriodo + 1;
                 var contaArquivo = 0;
                 var contaCommit = 0;
+                var contaModificada = 0;
+                var contaAdicionada = 0;
+                var contaRemovida = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -565,6 +620,9 @@
                         //ver quais arquivos tem o mesmo sha e incrementar no map
                             if(shaCommit === returnedJson[j].shaFile){
                                  contaArquivo = contaArquivo + 1;
+                                 contaModificada = contaModificada + returnedJson[j].lineChanged;
+                                 contaAdicionada = contaAdicionada + returnedJson[j].lineAdd;
+                                 contaRemovida = contaRemovida + returnedJson[j].lineDeleted;
                             }
                         }
                         
@@ -572,6 +630,7 @@
                 }
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
@@ -596,22 +655,55 @@
 
               chart.draw(data, options);
             }
+            
+             google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart2lines);
+
+            function drawChart2lines() {
+              var data = google.visualization.arrayToDataTable(arrayLine2);
+              document.getElementById("div_chart_curvelines").style.display = "block"
+
+              var options = {
+                title: 'Quantidade de linhas alteradas',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+              };
+
+              var chart = new google.visualization.LineChart(document.getElementById('curve_chartlines'));
+              google.visualization.events.addListener(chart, 'ready', myReadyHandler);
+              
+              function myReadyHandler(){
+                document.getElementById("div_chart_curvelines").style.display = "none"; 
+              }
+              
+              chart.draw(data, options);
+            }
             //fim timeline grafico
             
             //inicio heatmap utvilizar spearman
             var arquivoEntropia = []; //array para guardar a entropia com indexes numerico para files
             var arquivoDefeito = [];//array para guardar o numero de defeitos com indexes numerico para file
+            var arquivoModificada = [];//array para guardar o numero de linhas modficadas com indexes numerico para file
+            var arquivoAdicionado = [];
+            var arquivoRemovido = []; 
             
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
                 arquivoDefeito.push(mapFileBug[name]);
+                arquivoModificada.push(mapFilesChanged[name]);
+                arquivoAdicionado.push(mapFilesAdded[name]);
+                arquivoRemovido.push(mapFilesRemoved[name]);
             }
             
-            var corr = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var corrEntDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var corrEntMod = spearson.correlation.spearman(arquivoEntropia, arquivoModificada);
+            var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
+            var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
+            
             var data = [
               {
-                z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas'],
+                z: [[corrEntDef, corrEntMod, corrEntAdd, corrEntRem], [-1, -1, -1, -1], [-1, -1, -1, -1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas'],
                 y: ['Entropia', 'Afternoon', 'Evening'],
                 type: 'heatmap'
               }
@@ -629,6 +721,7 @@
             var countCommit;
             var listcommit;
             var returnedJsonPull;
+            var returnedJsonPullClosed;
             //2016-10-14 2016-10-26
             var date1 = document.getElementById('dateStart2').value;
             var date2 = document.getElementById('dateEnd2').value;;
@@ -638,6 +731,7 @@
             var urlcommit = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcountcommitbydate/' + date1 + '/'+ date2 +'/' + projeto;
             var urlfiles = 'http://localhost:9090/WebService/webresources/webservicegit/project/getfilesbydate/'+ date1 + '/' + date2 +'/' + projeto;
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
+            var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
             
             $.ajax({
@@ -705,6 +799,26 @@
            $.ajax({
                // GET is the default type, no need to specify it
                type: 'GET',
+               url: urlpullrequestclosed,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+                    //data is the object that youre after, handle it here
+
+                    returnedJsonPullClosed = data;
+                    //alert("Sucesso: ");
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+           $.ajax({
+               // GET is the default type, no need to specify it
+               type: 'GET',
                url: urllistcommits,
                contentType: "application/json",
                dataType : 'json',
@@ -727,6 +841,9 @@
            
            var pulltext2 = document.getElementById('pullrequest2');
            pulltext2.innerHTML = returnedJsonPull.length;
+           
+           var pulltextclosed2 = document.getElementById('pullrequestclosed2');
+           pulltextclosed2.innerHTML = returnedJsonPullClosed.length;
            
            //array treemap para dividir por pacotes
            var treeMapArray = [
@@ -909,6 +1026,10 @@
                         ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
                         
                       ];
+            var arrayLine2 = [
+                        ['Periodo', 'Linhas modificadas','linhas adicionadas', 'linhas removidas']
+                        
+                      ];
                       
             var numPeriodo = 0;
             var dInicio = new Date(date1);
@@ -922,10 +1043,14 @@
             console.log("date: " + dFinal);
             //https://www.w3schools.com/js/js_date_methods.asp
             
+            //enquanto nao chegar no final do periodo, avançar em 15 dias no intervalo
             while(dPeriodo <= dFinal){
                 numPeriodo = numPeriodo + 1;
                 var contaArquivo = 0;
                 var contaCommit = 0;
+                var contaModificada = 0;
+                var contaAdicionada = 0;
+                var contaRemovida = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -938,6 +1063,9 @@
                         //ver quais arquivos tem o mesmo sha e incrementar no map
                             if(shaCommit === returnedJson[j].shaFile){
                                  contaArquivo = contaArquivo + 1;
+                                 contaModificada = contaModificada + returnedJson[j].lineChanged;
+                                 contaAdicionada = contaAdicionada + returnedJson[j].lineAdd;
+                                 contaRemovida = contaRemovida + returnedJson[j].lineDeleted;
                             }
                         }
                         
@@ -945,6 +1073,7 @@
                 }
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
@@ -969,23 +1098,56 @@
 
               chart.draw(data, options);
             }
+            
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart2lines);
+
+            function drawChart2lines() {
+              var data = google.visualization.arrayToDataTable(arrayLine2);
+              document.getElementById("div_chart_curve2lines").style.display = "block"; 
+              
+              var options = {
+                title: 'Quantidade de linhas alteradas',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+              };
+
+              var chart = new google.visualization.LineChart(document.getElementById('curve_chart2lines'));
+              google.visualization.events.addListener(chart, 'ready', myReadyHandler);
+              
+              function myReadyHandler(){
+                document.getElementById("div_chart_curve2lines").style.display = "none"; 
+              }
+
+              chart.draw(data, options);
+            }
             //fim timeline grafico
             
             //heatmap
             //inicio heatmap utvilizar spearman
             var arquivoEntropia = []; //array para guardar a entropia com indexes numerico para files
             var arquivoDefeito = [];//array para guardar o numero de defeitos com indexes numerico para file
+            var arquivoModificada = [];//array para guardar o numero de linhas modficadas com indexes numerico para file
+            var arquivoAdicionado = [];
+            var arquivoRemovido = [];
             
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
                 arquivoDefeito.push(mapFileBug[name]);
+                arquivoModificada.push(mapFilesChanged[name]);
+                arquivoAdicionado.push(mapFilesAdded[name]);
+                arquivoRemovido.push(mapFilesRemoved[name]);
             }
             
-            var corr = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var corrArqDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var corrEntMod = spearson.correlation.spearman(arquivoEntropia, arquivoModificada);
+            var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
+            var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
+            
             var data = [
               {
-                z: [[corr, 1, 1], [-1, -1, -1], [-1, -1, -1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas'],
+                z: [[corrArqDef, corrEntMod,corrEntAdd, corrEntRem], [-1, -1, -1, -1], [-1, -1, -1, -1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas'],
                 y: ['Entropia', 'Afternoon', 'Evening'],
                 type: 'heatmap'
               }
@@ -993,23 +1155,23 @@
 
           Plotly.newPlot('fieldHeat2', data);
         }
+        
+        
     </script>
     
     <script type="text/javascript">
-      var data = [
-      {
-        z: [[1, 20, 30, 50, 1], [20, 1, 60, 80, 30], [30, 60, 1, -10, 20]],
-        x: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        y: ['Morning', 'Afternoon', 'Evening'],
-        type: 'heatmap'
-      }
-    ];
-
-    Plotly.newPlot('myDiv2', data);
     
     //funcoes para controlar as abas (navbar)
     function shownav2(){
         var optionTreemapDisplay;
+        var optionCharLineDisplay;
+        
+        if( document.getElementById("div_chart_curve2lines").style.display == "none"){
+            optionCharLineDisplay = "byFilesAndCommits";
+        }else{
+            optionCharLineDisplay = "byNumberLines";
+        }
+        
         if( document.getElementById("div_treemap_files").style.display == "none"){
             optionTreemapDisplay = "showByPackage";
         }else{
@@ -1022,6 +1184,7 @@
         document.getElementById("div_button").style.display = "none";
         document.getElementById("div_treemap").style.display = "none";
         document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("div_chart_curvelines").style.display = "none";
         document.getElementById("report").style.display = "none";
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
@@ -1029,28 +1192,43 @@
         document.getElementById("div_search").style.display = "none";
         document.getElementById("div_button_treemap").style.display = "none";
         document.getElementById("divHeat").style.display = "none";
+        document.getElementById("div_button_curve").style.display = "none";
         
         document.getElementById("div_combo2").style.display = "block";
         document.getElementById("div_data_inicial2").style.display = "block";
         document.getElementById("div_data_final2").style.display = "block";
         document.getElementById("div_button2").style.display = "block";
-        document.getElementById("div_chart_curve2").style.display = "block";
         document.getElementById("report2").style.display = "block";
         document.getElementById("filter2").style.display = "block";
         document.getElementById("div_table2").style.display = "block";
         document.getElementById("div_button_treemap2").style.display = "block";
         document.getElementById("divHeat2").style.display = "block";
+        document.getElementById("div_button_curve2").style.display = "block";
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap2").style.display = "block";
         }else{
             document.getElementById("div_treemap_files2").style.display = "block";
         }
+        
+        if(optionCharLineDisplay == "byNumberLines"){
+            document.getElementById("div_chart_curve2lines").style.display = "block";
+        }else{
+            document.getElementById("div_chart_curve2").style.display = "block";
+        }
        
     }
     
     function shownav1(){
         var optionTreemapDisplay;
+        var optionCharLineDisplay;
+        
+        if( document.getElementById("div_chart_curvelines").style.display == "none"){
+            optionCharLineDisplay = "byFilesAndCommits";
+        }else{
+            optionCharLineDisplay = "byNumberLines";
+        }
+        
         if( document.getElementById("div_treemap_files2").style.display == "none"){
             optionTreemapDisplay = "showByPackage";
         }else{
@@ -1063,6 +1241,7 @@
         document.getElementById("div_button2").style.display = "none";
         document.getElementById("div_treemap2").style.display = "none";
         document.getElementById("div_chart_curve2").style.display = "none";
+        document.getElementById("div_chart_curve2lines").style.display = "none";
         document.getElementById("report2").style.display = "none";
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
@@ -1070,22 +1249,29 @@
         document.getElementById("div_search").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
         document.getElementById("divHeat2").style.display = "none";
+        document.getElementById("div_button_curve2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "block";
         document.getElementById("div_data_inicial").style.display = "block";
         document.getElementById("div_data_final").style.display = "block";
         document.getElementById("div_button").style.display = "block";
         document.getElementById("div_button_treemap").style.display = "block";
-        document.getElementById("div_chart_curve").style.display = "block";
         document.getElementById("report").style.display = "block";
         document.getElementById("filter").style.display = "block";
         document.getElementById("div_table").style.display = "block";
         document.getElementById("divHeat").style.display = "block";
+        document.getElementById("div_button_curve").style.display = "block";
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap").style.display = "block";
         }else{
             document.getElementById("div_treemap_files").style.display = "block";
+        }
+        
+        if(optionCharLineDisplay == "byNumberLines"){
+            document.getElementById("div_chart_curvelines").style.display = "block";
+        }else{
+            document.getElementById("div_chart_curve").style.display = "block";
         }
         
     }
@@ -1099,12 +1285,14 @@
         document.getElementById("div_button2").style.display = "none";
         document.getElementById("div_treemap2").style.display = "none";
         document.getElementById("div_chart_curve2").style.display = "none";
+        document.getElementById("div_chart_curve2lines").style.display = "none";
         document.getElementById("report2").style.display = "none";
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
         document.getElementById("div_treemap_files2").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
         document.getElementById("divHeat2").style.display = "none";
+        document.getElementById("div_button_curve2").style.display = "none";
         
         document.getElementById("div_combo").style.display = "none";
         document.getElementById("div_data_inicial").style.display = "none";
@@ -1112,12 +1300,14 @@
         document.getElementById("div_button").style.display = "none";
         document.getElementById("div_treemap").style.display = "none";
         document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("div_chart_curvelines").style.display = "none";
         document.getElementById("report").style.display = "none";
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
         document.getElementById("div_treemap_files").style.display = "none";
         document.getElementById("div_button_treemap").style.display = "none";
         document.getElementById("divHeat").style.display = "none";
+        document.getElementById("div_button_curve").style.display = "none";
     }
     
     function changeTreemap(){
@@ -1141,6 +1331,30 @@
         else{
             document.getElementById("div_treemap2").style.display = 'none';
             document.getElementById("div_treemap_files2").style.display = 'block';
+        }
+    }
+    
+    function changeLineChart(){
+        var display = document.getElementById("div_chart_curve").style.display;
+        if(display == "none"){
+            document.getElementById("div_chart_curve").style.display = 'block';
+            document.getElementById("div_chart_curvelines").style.display = 'none';
+        }
+        else{
+            document.getElementById("div_chart_curve").style.display = 'none';
+            document.getElementById("div_chart_curvelines").style.display = 'block';
+        }
+    }
+    
+    function changeLineChart2(){
+        var display = document.getElementById("div_chart_curve2").style.display;
+        if(display == "none"){
+            document.getElementById("div_chart_curve2").style.display = 'block';
+            document.getElementById("div_chart_curve2lines").style.display = 'none';
+        }
+        else{
+            document.getElementById("div_chart_curve2").style.display = 'none';
+            document.getElementById("div_chart_curve2lines").style.display = 'block';
         }
     }
     
