@@ -14,7 +14,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Commit;
+import modelo.CommitPullRequest;
 import modelo.File;
+import modelo.FilePullRequest;
 import modelo.Project;
 import modelo.PullRequest;
 
@@ -404,6 +406,88 @@ public class DAO {
                 String nameProject = rs.getString("nameProject");
                 
                 PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject);
+                //Commit c = new Commit("a","a","a","a","a");
+                lista.add(c);
+                
+            }
+
+            return lista;
+        } catch (Exception ex) {
+            System.out.println("Erro : " + ex.getMessage());
+            return lista;
+        }
+    }
+    
+    public static List listCommitPullRequestClosedByDate(String dataInicio, String dataFim, String nomeProjeto) {
+
+        Connection conexao = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String returnString = "";
+        List<CommitPullRequest> lista = new ArrayList<CommitPullRequest>();
+        
+        try {
+            Class.forName(driver).newInstance();
+            conexao = DriverManager.getConnection(url + dbName, userName, password);
+            Statement statement = conexao.createStatement();
+            String sql = "select * from commitPullRequest "
+                    +   "INNER JOIN pullRequest ON numberId = numberCommitPull AND nameProject = nameProjectCommitPull "
+                    +   "where dateClose BETWEEN '" + dataInicio + "' AND '" + dataFim + "' " 
+                    +   "and nameProject = '" + nomeProjeto + "' ";
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                String sha = rs.getString("shaCommitPull");
+                String authorPull = rs.getString("authorCommitPull");
+                String dateCreate = rs.getDate("dateCommitPull").toString();
+                int numberCommitPull = rs.getInt("numberCommitPull");
+                String nameProject = rs.getString("nameProjectCommitPull");
+                String message = rs.getString("messageCommitPull");
+                String link = rs.getString("linkCommitPull");
+                
+                CommitPullRequest c = new CommitPullRequest(sha, authorPull, dateCreate, numberCommitPull, nameProject, message, link);
+                //Commit c = new Commit("a","a","a","a","a");
+                lista.add(c);
+                
+            }
+
+            return lista;
+        } catch (Exception ex) {
+            System.out.println("Erro : " + ex.getMessage());
+            return lista;
+        }
+    }
+    
+    public static List listFilesPullRequestClosedByDate(String dataInicio, String dataFim, String nomeProjeto) {
+
+        Connection conexao = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String returnString = "";
+        List<FilePullRequest> lista = new ArrayList<FilePullRequest>();
+        
+        try {
+            Class.forName(driver).newInstance();
+            conexao = DriverManager.getConnection(url + dbName, userName, password);
+            Statement statement = conexao.createStatement();
+            String sql = "select * from filesPullRequest "
+                    +   "INNER JOIN pullRequest ON numberId = pullReqNumber AND nameProject = nameProjectFilePull "
+                    +   "where dateClose BETWEEN '" + dataInicio + "' AND '" + dataFim + "' " 
+                    +   "and nameProject = '" + nomeProjeto + "' ";
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                int pullReqNumber = rs.getInt("pullReqNumber");
+                String fileName = rs.getString("fileName");
+                int additions = rs.getInt("additions");
+                int deletions = rs.getInt("deletions");
+                int changes = rs.getInt("changes");
+                int numComment = rs.getInt("numComment");
+                String nameProjectFilePull = rs.getString("nameProjectFilePull");
+                
+                FilePullRequest c = new FilePullRequest(pullReqNumber, fileName, additions, deletions, changes, numComment, nameProjectFilePull);
                 //Commit c = new Commit("a","a","a","a","a");
                 lista.add(c);
                 

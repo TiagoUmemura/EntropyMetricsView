@@ -22,7 +22,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.GenericEntity;
 import modelo.Commit;
+import modelo.CommitPullRequest;
 import modelo.File;
+import modelo.FilePullRequest;
 import modelo.Project;
 import modelo.PullRequest;
 
@@ -159,6 +161,34 @@ public class WS {
         List<PullRequest> lista = new ArrayList<PullRequest>(); 
         
         lista = DAO.listPullRequestByDate(dataInicio, dataFim, nomeprojeto);
+        
+        Gson g = new Gson();
+        return g.toJson(lista);
+    }
+    
+    @GET
+    @Produces("application/json")
+    @Path("project/getCommitPullRequestclosedbydate/{datainicio}/{datafim}/{nomeprojeto}")
+    public String getCommitPullRequestClosedByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
+        //TODO return proper representation object
+        //retorna os pullRequest abertos
+        List<CommitPullRequest> lista = new ArrayList<CommitPullRequest>(); 
+        
+        lista = DAO.listCommitPullRequestClosedByDate(dataInicio, dataFim, nomeprojeto);
+        
+        Gson g = new Gson();
+        return g.toJson(lista);
+    }
+    
+    @GET
+    @Produces("application/json")
+    @Path("project/getFilePullRequestclosedbydate/{datainicio}/{datafim}/{nomeprojeto}")
+    public String getFilesPullRequestClosedByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
+        //TODO return proper representation object
+        //retorna os pullRequest abertos
+        List<FilePullRequest> lista = new ArrayList<FilePullRequest>(); 
+        
+        lista = DAO.listFilesPullRequestClosedByDate(dataInicio, dataFim, nomeprojeto);
         
         Gson g = new Gson();
         return g.toJson(lista);
