@@ -377,6 +377,47 @@ public class DAO {
         }
     }
     
+    public static List listFilesPullRequestOpenByDate(String dataInicio, String dataFim, String nomeProjeto) {
+
+        Connection conexao = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        String returnString = "";
+        List<FilePullRequest> lista = new ArrayList<FilePullRequest>();
+        
+        try {
+            Class.forName(driver).newInstance();
+            conexao = DriverManager.getConnection(url + dbName, userName, password);
+            Statement statement = conexao.createStatement();
+            String sql = "select * from filesPullRequest "
+                    +   "INNER JOIN pullRequest ON numberId = pullReqNumber AND nameProject = nameProjectFilePull "
+                    +   "where dateCreate BETWEEN '" + dataInicio + "' AND '" + dataFim + "' " 
+                    +   "and nameProject = '" + nomeProjeto + "' ";
+
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                int pullReqNumber = rs.getInt("pullReqNumber");
+                String fileName = rs.getString("fileName");
+                int additions = rs.getInt("additions");
+                int deletions = rs.getInt("deletions");
+                int changes = rs.getInt("changes");
+                int numComment = rs.getInt("numComment");
+                String nameProjectFilePull = rs.getString("nameProjectFilePull");
+                
+                FilePullRequest c = new FilePullRequest(pullReqNumber, fileName, additions, deletions, changes, numComment, nameProjectFilePull);
+                //Commit c = new Commit("a","a","a","a","a");
+                lista.add(c);
+                
+            }
+
+            return lista;
+        } catch (Exception ex) {
+            System.out.println("Erro : " + ex.getMessage());
+            return lista;
+        }
+    }
+    
     public static List listPullRequestClosedByDate(String dataInicio, String dataFim, String nomeProjeto) {
 
         Connection conexao = null;

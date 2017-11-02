@@ -117,11 +117,14 @@
             <tr>
               <th>Arquivo</th>
               <th>Entropia</th>
-              <th>Linhas adicionadas</th>
-              <th>Linhas removidas</th>
-              <th>Linhas Modificadas</th>
-              <th>Defeitos</th>
+              <th>Add</th>
+              <th>Remove</th>
+              <th>Changed</th>
+              <th>Defects</th>
               <th>P.R Closed</th>
+              <th>P.R Closed Comment</th>
+              <th>P.R Opened</th>
+              <th>P.R Opened Comment</th>
             </tr>
          </table>
         </div>
@@ -273,6 +276,7 @@
             var returnedJson;
             var countCommit;
             var returnedJsonPull;
+            var jsonFilePullRequestOpen;
             var returnedJsonPullClosed;
             var jsonFilePullRequestClosed;
             var listcommit;
@@ -287,6 +291,7 @@
             var urlcommitcount = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcountcommitbydate/' + date1 + '/'+ date2 +'/' + projeto;
             var urlfiles = 'http://localhost:9090/WebService/webresources/webservicegit/project/getfilesbydate/'+ date1 + '/' + date2 +'/' + projeto;
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
+            var urlFilePullRequestOpen = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestopenbydate/'+ date1 + '/' + date2 +'/'+ projeto;;
             var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
             var urlCommitPullRequestClosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getCommitPullRequestclosedbydate/'+ date1 + '/' + date2 + '/' + projeto;
@@ -342,10 +347,29 @@
                crossDomain:true,
                async: false,
                success: function(data) {
-                    //data is the object that youre after, handle it here
+                    //pull aberto
 
                     returnedJsonPull = data;
-                    alert("Sucesso: ");
+                    //alert("Sucesso: ");
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+           $.ajax({
+               // GET is the default type, no need to specify it
+               type: 'GET',
+               url:  urlFilePullRequestOpen,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+                    //arquivos de pull request abertos
+
+                   jsonFilePullRequestOpen = data;
                     
                },
                error: function(e){
@@ -365,7 +389,6 @@
                     //data is the object that youre after, handle it here
 
                     returnedJsonPullClosed = data;
-                    //alert("Sucesso: ");
                     
                },
                error: function(e){
@@ -434,10 +457,13 @@
                       ];
             
             var mapFiles = {};//numero de vezes que o arquivo foi commitado
-            var mapFilesAdded = {}//numero de linhas adicionadas no total
-            var mapFilesRemoved = {} // numero de linhas removidas
-            var mapFilesChanged = {} //numero de linhas modificadas
+            var mapFilesAdded = {};//numero de linhas adicionadas no total
+            var mapFilesRemoved = {}; // numero de linhas removidas
+            var mapFilesChanged = {}; //numero de linhas modificadas
             var mapFilePullRequestClosed = {};//numero de pull request fechado por arquivo
+            var mapFileCommentPullRequestClosed = {};//numero de comment pull request fechado por arquivo
+            var mapFilePullRequestOpen = {};//numero de pull request fechado por arquivo
+            var mapFileCommentPullRequestOpen = {};//numero de comment pull request fechado por arquivo
             
             //Contar quantas vezes os arquivos (files) foram modificados
             //Contagem de linhas modificadas e quantas vezes o arquivo foi comitado
@@ -490,34 +516,67 @@
             }
             //FIM CONTAGEM NUMERO DEFEITOS
             
-            //INICIO CONTAGEM PULL REQUEST FECHADO
+            //INICIO CONTAGEM PULL REQUEST ABERTO E FECHADO
+            
+            //pull fechado comentario e pull por arquivo
             for (i = 0; i < returnedJsonPullClosed.length; i++){
+                
+                var numComment = returnedJsonPullClosed[i].numComments;
+                
                 for(j = 0; j < jsonFilePullRequestClosed.length; j++){
                     if(returnedJsonPullClosed[i].nameProject == jsonFilePullRequestClosed[j].nameProjectFilePull && returnedJsonPullClosed[i].numberId == jsonFilePullRequestClosed[j].pullReqNumber){
                         //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
                         if(jsonFilePullRequestClosed[j].fileName in mapFilePullRequestClosed){
                             mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] + 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] + numComment;
                         }else{
                             mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = numComment;
                         }
                     }
                 }
             }
             
-            for (var name in mapFilePullRequestClosed){
-                console.log(name + ":" + mapFilePullRequestClosed[name])
+            //pull aberto comentario e pull por arquivo
+            for (i = 0; i < returnedJsonPull.length; i++){
+                
+                var numComment = returnedJsonPull[i].numComments;
+                
+                for(j = 0; j < jsonFilePullRequestOpen.length; j++){
+                    if(returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber){
+                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+                        if(jsonFilePullRequestOpen[j].fileName in mapFilePullRequestOpen){
+                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] + 1;
+                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] + numComment;
+                        }else{
+                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = 1;
+                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = numComment;
+                        }
+                    }
+                }
             }
             
+            //Colocar valor 0 de pull req fechado para os demais arquivos
             for(var name in mapFiles){
                 if(name in mapFilePullRequestClosed){
                     
                 }else{
                     mapFilePullRequestClosed[name] = 0;
+                    mapFileCommentPullRequestClosed[name] = 0;
+                }
+                
+                if(name in mapFilePullRequestOpen){
+                    
+                }else{
+                    mapFilePullRequestOpen[name] = 0;
+                    mapFileCommentPullRequestOpen[name] = 0;
                 }
             }
             
-            
-            //FIM CONTAGEM PULL
+            //for(var name in mapFilePullRequestOpen){
+                //console.log(name + " : " + mapFilePullRequestOpen[name]);
+            //}
+            //FIM CONTAGEM PULL ABERTO E FECHADO E COMENTARIOS
             
             //Inserindo os arquivos no array que ira gerar o treemap
             for (var name in mapFiles) {
@@ -532,6 +591,9 @@
                 var cell5 = row.insertCell(4);
                 var cell6 = row.insertCell(5);
                 var cell7 = row.insertCell(6);
+                var cell8 = row.insertCell(7);
+                var cell9 = row.insertCell(8);
+                var cell10 = row.insertCell(9);
 
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
@@ -540,6 +602,9 @@
                 cell5.innerHTML = mapFilesChanged[name];
                 cell6.innerHTML = mapFileBug[name];
                 cell7.innerHTML = mapFilePullRequestClosed[name];
+                cell8.innerHTML = mapFileCommentPullRequestClosed[name];
+                cell9.innerHTML = mapFilePullRequestOpen[name];
+                cell10.innerHTML = mapFileCommentPullRequestOpen[name];
                 //var tf1 = setFilterGrid("teste2");
             }
             
@@ -633,7 +698,7 @@
             
             //fim treemap
             
-            //timeline grafico
+            //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
                         ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
@@ -654,7 +719,6 @@
             console.log("date: " + dInicio);
             console.log("date: " + dPeriodo);
             console.log("date: " + dFinal);
-            //https://www.w3schools.com/js/js_date_methods.asp
             
             while(dPeriodo <= dFinal){
                 numPeriodo = numPeriodo + 1;
@@ -683,6 +747,8 @@
                         
                     }
                 }
+                
+                //colocar no while pra contar comment e pullreq
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);

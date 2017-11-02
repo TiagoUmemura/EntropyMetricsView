@@ -157,10 +157,10 @@ public class WS {
     @Path("project/getPullRequestclosedbydate/{datainicio}/{datafim}/{nomeprojeto}")
     public String getPullRequestClosedByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
         //TODO return proper representation object
-        //retorna os pullRequest abertos
+        //retorna os pullRequest fechados
         List<PullRequest> lista = new ArrayList<PullRequest>(); 
         
-        lista = DAO.listPullRequestByDate(dataInicio, dataFim, nomeprojeto);
+        lista = DAO.listPullRequestClosedByDate(dataInicio, dataFim, nomeprojeto);
         
         Gson g = new Gson();
         return g.toJson(lista);
@@ -189,6 +189,20 @@ public class WS {
         List<FilePullRequest> lista = new ArrayList<FilePullRequest>(); 
         
         lista = DAO.listFilesPullRequestClosedByDate(dataInicio, dataFim, nomeprojeto);
+        
+        Gson g = new Gson();
+        return g.toJson(lista);
+    }
+    
+    @GET
+    @Produces("application/json")
+    @Path("project/getFilePullRequestopenbydate/{datainicio}/{datafim}/{nomeprojeto}")
+    public String getFilesPullRequestOpenByDate(@PathParam("datainicio") String dataInicio, @PathParam("datafim") String dataFim, @PathParam("nomeprojeto") String nomeprojeto) {
+        //TODO return proper representation object
+        //retorna os pullRequest abertos
+        List<FilePullRequest> lista = new ArrayList<FilePullRequest>(); 
+        
+        lista = DAO.listFilesPullRequestOpenByDate(dataInicio, dataFim, nomeprojeto);
         
         Gson g = new Gson();
         return g.toJson(lista);
