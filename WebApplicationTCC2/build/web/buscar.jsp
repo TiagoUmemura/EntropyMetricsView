@@ -121,6 +121,7 @@
               <th>Linhas removidas</th>
               <th>Linhas Modificadas</th>
               <th>Defeitos</th>
+              <th>P.R Closed</th>
             </tr>
          </table>
         </div>
@@ -273,6 +274,7 @@
             var countCommit;
             var returnedJsonPull;
             var returnedJsonPullClosed;
+            var jsonFilePullRequestClosed;
             var listcommit;
             //2016-10-14 2016-10-26
             var date1 = document.getElementById('dateStart').value;
@@ -287,6 +289,8 @@
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
+            var urlCommitPullRequestClosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getCommitPullRequestclosedbydate/'+ date1 + '/' + date2 + '/' + projeto;
+            var urlFilePullRequestClosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestclosedbydate/'+ date1 + '/' + date2 + '/' + projeto;
             
             $.ajax({
                // GET is the default type, no need to specify it
@@ -370,7 +374,7 @@
            });
            
            $.ajax({
-               // GET is the default type, no need to specify it
+               // Lista de commits do periodo definido
                type: 'GET',
                url: urllistcommits,
                contentType: "application/json",
@@ -378,9 +382,26 @@
                crossDomain:true,
                async: false,
                success: function(data) {
-                    //data is the object that youre after, handle it here
 
                     listcommit = data;
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+           $.ajax({
+               // Lista de arquivos dos pullRequest fechados no periodo
+               type: 'GET',
+               url: urlFilePullRequestClosed,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+
+                    jsonFilePullRequestClosed = data;
                     
                },
                error: function(e){
@@ -416,6 +437,7 @@
             var mapFilesAdded = {}//numero de linhas adicionadas no total
             var mapFilesRemoved = {} // numero de linhas removidas
             var mapFilesChanged = {} //numero de linhas modificadas
+            var mapFilePullRequestClosed = {};//numero de pull request fechado por arquivo
             
             //Contar quantas vezes os arquivos (files) foram modificados
             //Contagem de linhas modificadas e quantas vezes o arquivo foi comitado
@@ -466,6 +488,36 @@
                     mapFileBug[returnedJson[i].nameFile] = 0;
                 }
             }
+            //FIM CONTAGEM NUMERO DEFEITOS
+            
+            //INICIO CONTAGEM PULL REQUEST FECHADO
+            for (i = 0; i < returnedJsonPullClosed.length; i++){
+                for(j = 0; j < jsonFilePullRequestClosed.length; j++){
+                    if(returnedJsonPullClosed[i].nameProject == jsonFilePullRequestClosed[j].nameProjectFilePull && returnedJsonPullClosed[i].numberId == jsonFilePullRequestClosed[j].pullReqNumber){
+                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+                        if(jsonFilePullRequestClosed[j].fileName in mapFilePullRequestClosed){
+                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] + 1;
+                        }else{
+                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = 1;
+                        }
+                    }
+                }
+            }
+            
+            for (var name in mapFilePullRequestClosed){
+                console.log(name + ":" + mapFilePullRequestClosed[name])
+            }
+            
+            for(var name in mapFiles){
+                if(name in mapFilePullRequestClosed){
+                    
+                }else{
+                    mapFilePullRequestClosed[name] = 0;
+                }
+            }
+            
+            
+            //FIM CONTAGEM PULL
             
             //Inserindo os arquivos no array que ira gerar o treemap
             for (var name in mapFiles) {
@@ -479,12 +531,15 @@
                 var cell4 = row.insertCell(3);
                 var cell5 = row.insertCell(4);
                 var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
                 cell3.innerHTML = mapFilesAdded[name];
                 cell4.innerHTML = mapFilesRemoved[name];
                 cell5.innerHTML = mapFilesChanged[name];
                 cell6.innerHTML = mapFileBug[name];
+                cell7.innerHTML = mapFilePullRequestClosed[name];
                 //var tf1 = setFilterGrid("teste2");
             }
             
@@ -1077,9 +1132,6 @@
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
-                console.log("date dentro da funcao: " + dInicio);
-                console.log("date dentro da funcao: " + dPeriodo);
-                
             }
             
             google.charts.load('current', {'packages':['corechart']});
