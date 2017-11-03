@@ -207,10 +207,14 @@
             <tr>
               <th>Arquivo</th>
               <th>Entropia</th>
-              <th>Linhas adicionadas</th>
-              <th>Linhas removidas</th>
-              <th>Linhas Modificadas</th>
-              <th>Defeitos</th>
+              <th>Add</th>
+              <th>Remove</th>
+              <th>Changed</th>
+              <th>Defects</th>
+              <th>P.R Closed</th>
+              <th>P.R Closed Comment</th>
+              <th>P.R Opened</th>
+              <th>P.R Opened Comment</th>
             </tr>
          </table>
         </div>
@@ -291,7 +295,7 @@
             var urlcommitcount = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcountcommitbydate/' + date1 + '/'+ date2 +'/' + projeto;
             var urlfiles = 'http://localhost:9090/WebService/webresources/webservicegit/project/getfilesbydate/'+ date1 + '/' + date2 +'/' + projeto;
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
-            var urlFilePullRequestOpen = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestopenbydate/'+ date1 + '/' + date2 +'/'+ projeto;;
+            var urlFilePullRequestOpen = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestopenbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
             var urlCommitPullRequestClosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getCommitPullRequestclosedbydate/'+ date1 + '/' + date2 + '/' + projeto;
@@ -659,9 +663,9 @@
               tree = new google.visualization.TreeMap(document.getElementById('chart_div'));
 
               tree.draw(data, {
-                minColor: '#f00',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: '#f00',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true
@@ -682,9 +686,9 @@
               google.visualization.events.addListener(tree, 'ready', myReadyHandler);
 
               tree.draw(data, {
-                minColor: '#f00',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: '#f00',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true
@@ -701,7 +705,7 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
+                        ['Periodo', 'Quantidade de Arquivos','Commits','P.R Fechado', 'P.R Aberto']
                         
                       ];
             var arrayLine2 = [
@@ -727,6 +731,8 @@
                 var contaModificada = 0;
                 var contaAdicionada = 0;
                 var contaRemovida = 0;
+                var contaPullRequestFechado = 0;
+                var contaPullRequestAberto = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -748,9 +754,27 @@
                     }
                 }
                 
-                //colocar no while pra contar comment e pullreq
+                //Pull request fechado a cada 15 dias
+                for (i = 0; i < returnedJsonPullClosed.length; i++){
+                    var dateString = returnedJsonPullClosed[i].dateClose;
+                    var date = new Date(dateString);
+                    
+                    if(date < dPeriodo && date >= dInicio){
+                        contaPullRequestFechado = contaPullRequestFechado + 1;
+                    }
+                }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                //Pull Request aberto a cada 15 dias
+                for (i = 0; i < returnedJsonPull.length; i++){
+                    var dateString = returnedJsonPull[i].dateCreate;
+                    var date = new Date(dateString);
+                    
+                    if(date < dPeriodo && date >= dInicio){
+                        contaPullRequestAberto = contaPullRequestAberto + 1;
+                    }
+                }
+                
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaPullRequestFechado, contaPullRequestAberto]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
@@ -767,7 +791,7 @@
               var data = google.visualization.arrayToDataTable(arrayLine);
 
               var options = {
-                title: 'Quantidade de arquivos alterados',
+                title: 'Quantidade de mudança',
                 curveType: 'function',
                 legend: { position: 'bottom' }
               };
@@ -808,12 +832,22 @@
             var arquivoAdicionado = [];
             var arquivoRemovido = []; 
             
+            var arquivoPullRequestClosed = [];
+            var arquivoPullRequestOpen = [];
+            var arquivoCommentPullRequestClosed = [];
+            var arquivoCommentPullRequestOpen = [];
+            
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
                 arquivoDefeito.push(mapFileBug[name]);
                 arquivoModificada.push(mapFilesChanged[name]);
                 arquivoAdicionado.push(mapFilesAdded[name]);
                 arquivoRemovido.push(mapFilesRemoved[name]);
+                
+                arquivoPullRequestClosed.push(mapFilePullRequestClosed[name]);//numero de pull request fechado por arquivo
+                arquivoPullRequestOpen.push(mapFilePullRequestOpen[name]);//numero de pull request fechado por arquivo
+                arquivoCommentPullRequestClosed.push(mapFileCommentPullRequestClosed[name]);//numero de comment pull request fechado por arquivo
+                arquivoCommentPullRequestOpen.push(mapFileCommentPullRequestOpen[name]);//numero de comment pull request fechado por arquivo
             }
             
             var corrEntDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
@@ -821,10 +855,15 @@
             var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
             var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
             
+            var corrEntPullReqClosed = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestClosed);
+            var corrEntPullReqClosedComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestClosed);
+            var corrEntPullReqOpen = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestOpen);
+            var corrEntPullReqOpenComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestOpen);
+            
             var data = [
               {
-                z: [[corrEntDef, corrEntMod, corrEntAdd, corrEntRem], [-1, -1, -1, -1], [-1, -1, -1, -1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas'],
+                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment'],
                 y: ['Entropia', 'Afternoon', 'Evening'],
                 type: 'heatmap'
               }
@@ -843,6 +882,8 @@
             var listcommit;
             var returnedJsonPull;
             var returnedJsonPullClosed;
+            var jsonFilePullRequestOpen;
+            var jsonFilePullRequestClosed;
             //2016-10-14 2016-10-26
             var date1 = document.getElementById('dateStart2').value;
             var date2 = document.getElementById('dateEnd2').value;;
@@ -854,7 +895,9 @@
             var urlpullrequest = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urlpullrequestclosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getPullRequestclosedbydate/'+ date1 + '/' + date2 +'/'+ projeto;
             var urllistcommits = 'http://localhost:9090/WebService/webresources/webservicegit/project/getcommitsbydate/'+ date1 + '/' + date2 + '/' + projeto;
-            
+            var urlFilePullRequestOpen = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestopenbydate/'+ date1 + '/' + date2 +'/'+ projeto;
+            var urlFilePullRequestClosed = 'http://localhost:9090/WebService/webresources/webservicegit/project/getFilePullRequestclosedbydate/'+ date1 + '/' + date2 + '/' + projeto;
+
             $.ajax({
                // GET is the default type, no need to specify it
                type: 'GET',
@@ -956,6 +999,43 @@
                }
            });
            
+           $.ajax({
+               // GET is the default type, no need to specify it
+               type: 'GET',
+               url:  urlFilePullRequestOpen,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+                    //arquivos de pull request abertos
+
+                   jsonFilePullRequestOpen = data;
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
+           $.ajax({
+               // Lista de arquivos dos pullRequest fechados no periodo
+               type: 'GET',
+               url: urlFilePullRequestClosed,
+               contentType: "application/json",
+               dataType : 'json',
+               crossDomain:true,
+               async: false,
+               success: function(data) {
+
+                    jsonFilePullRequestClosed = data;
+                    
+               },
+               error: function(e){
+                    alert('Could not able to find location!' + e);
+               }
+           });
+           
            //document.getElementById('numCommit2').value = countCommit[0].numbercommit;
            var countCommitText2 = document.getElementById('numbercommit2'); 
            countCommitText2.innerHTML = countCommit[0].numbercommit;
@@ -982,6 +1062,11 @@
             var mapFilesAdded = {};//numero de linhas adicionadas no total
             var mapFilesRemoved = {}; // numero de linhas removidas
             var mapFilesChanged = {}; //numero de linhas modificadas
+            var mapFilePullRequestClosed = {};//numero de pull request fechado por arquivo
+            var mapFileCommentPullRequestClosed = {};//numero de comment pull request fechado por arquivo
+            var mapFilePullRequestOpen = {};//numero de pull request fechado por arquivo
+            var mapFileCommentPullRequestOpen = {};//numero de comment pull request fechado por arquivo
+            
             //data.length
             for (i = 0; i < returnedJson.length; i++) { 
                 //treeMapArray.push([returnedJson[i].nameFile, 'Project',returnedJson[i].lineChanged,returnedJson[i].lineChanged]);
@@ -1031,6 +1116,68 @@
                     mapFileBug[returnedJson[i].nameFile] = 0;
                 }
             }
+            //FIM CONTAGEM BUGS
+            
+            //INICIO CONTAGEM PULL REQUEST ABERTO E FECHADO
+            //pull fechado comentario e pull por arquivo
+            for (i = 0; i < returnedJsonPullClosed.length; i++){
+                
+                var numComment = returnedJsonPullClosed[i].numComments;
+                
+                for(j = 0; j < jsonFilePullRequestClosed.length; j++){
+                    if(returnedJsonPullClosed[i].nameProject == jsonFilePullRequestClosed[j].nameProjectFilePull && returnedJsonPullClosed[i].numberId == jsonFilePullRequestClosed[j].pullReqNumber){
+                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+                        if(jsonFilePullRequestClosed[j].fileName in mapFilePullRequestClosed){
+                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] + 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] + numComment;
+                        }else{
+                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = numComment;
+                        }
+                    }
+                }
+            }
+            
+            //pull aberto comentario e pull por arquivo
+            for (i = 0; i < returnedJsonPull.length; i++){
+                
+                var numComment = returnedJsonPull[i].numComments;
+                
+                for(j = 0; j < jsonFilePullRequestOpen.length; j++){
+                    if(returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber){
+                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+                        if(jsonFilePullRequestOpen[j].fileName in mapFilePullRequestOpen){
+                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] + 1;
+                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] + numComment;
+                        }else{
+                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = 1;
+                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = numComment;
+                        }
+                    }
+                }
+            }
+            
+            //Colocar valor 0 de pull req fechado para os demais arquivos
+            for(var name in mapFiles){
+                if(name in mapFilePullRequestClosed){
+                    
+                }else{
+                    mapFilePullRequestClosed[name] = 0;
+                    mapFileCommentPullRequestClosed[name] = 0;
+                }
+                
+                if(name in mapFilePullRequestOpen){
+                    
+                }else{
+                    mapFilePullRequestOpen[name] = 0;
+                    mapFileCommentPullRequestOpen[name] = 0;
+                }
+            }
+            
+            //for(var name in mapFilePullRequestOpen){
+                //console.log(name + " : " + mapFilePullRequestOpen[name]);
+            //}
+            //FIM CONTAGEM PULL ABERTO E FECHADO E COMENTARIOS
             
             
             for (var name in mapFiles) {
@@ -1044,12 +1191,21 @@
                 var cell4 = row.insertCell(3);
                 var cell5 = row.insertCell(4);
                 var cell6 = row.insertCell(5);
+                var cell7 = row.insertCell(6);
+                var cell8 = row.insertCell(7);
+                var cell9 = row.insertCell(8);
+                var cell10 = row.insertCell(9);
+
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
                 cell3.innerHTML = mapFilesAdded[name];
                 cell4.innerHTML = mapFilesRemoved[name];
                 cell5.innerHTML = mapFilesChanged[name];
                 cell6.innerHTML = mapFileBug[name];
+                cell7.innerHTML = mapFilePullRequestClosed[name];
+                cell8.innerHTML = mapFileCommentPullRequestClosed[name];
+                cell9.innerHTML = mapFilePullRequestOpen[name];
+                cell10.innerHTML = mapFileCommentPullRequestOpen[name];
             }
             
             //for para dividir em pastas, pacotes
@@ -1103,9 +1259,9 @@
               tree = new google.visualization.TreeMap(document.getElementById('chart_div2'));
 
               tree.draw(data, {
-                minColor: '#f00',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: '#f00',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true
@@ -1126,9 +1282,9 @@
               google.visualization.events.addListener(tree, 'ready', myReadyHandler);
 
               tree.draw(data, {
-                minColor: '#f00',
+                minColor: '#0d0',
                 midColor: '#ddd',
-                maxColor: '#0d0',
+                maxColor: '#f00',
                 headerHeight: 15,
                 fontColor: 'black',
                 showScale: true
@@ -1141,10 +1297,10 @@
             }
             //Fim treemap
             
-            //timeline grafico
+            //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
+                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits','P.R fechado', 'P.R aberto']
                         
                       ];
             var arrayLine2 = [
@@ -1172,7 +1328,10 @@
                 var contaModificada = 0;
                 var contaAdicionada = 0;
                 var contaRemovida = 0;
+                var contaPullRequestFechado = 0;
+                var contaPullRequestAberto = 0;
                 
+                //Contar commit e linhas a cada 15 dias
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
                     var date = new Date(dateString);
@@ -1193,7 +1352,27 @@
                     }
                 }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                //Pull request fechado a cada 15 dias
+                for (i = 0; i < returnedJsonPullClosed.length; i++){
+                    var dateString = returnedJsonPullClosed[i].dateClose;
+                    var date = new Date(dateString);
+                    
+                    if(date < dPeriodo && date >= dInicio){
+                        contaPullRequestFechado = contaPullRequestFechado + 1;
+                    }
+                }
+                
+                //Pull Request aberto a cada 15 dias
+                for (i = 0; i < returnedJsonPull.length; i++){
+                    var dateString = returnedJsonPull[i].dateCreate;
+                    var date = new Date(dateString);
+                    
+                    if(date < dPeriodo && date >= dInicio){
+                        contaPullRequestAberto = contaPullRequestAberto + 1;
+                    }
+                }
+                
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaPullRequestFechado, contaPullRequestAberto]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
@@ -1207,7 +1386,7 @@
               var data = google.visualization.arrayToDataTable(arrayLine);
 
               var options = {
-                title: 'Quantidade de arquivos alterados',
+                title: 'Quantidade de mudança',
                 curveType: 'function',
                 legend: { position: 'bottom' }
               };
@@ -1248,6 +1427,10 @@
             var arquivoModificada = [];//array para guardar o numero de linhas modficadas com indexes numerico para file
             var arquivoAdicionado = [];
             var arquivoRemovido = [];
+            var arquivoPullRequestClosed = [];
+            var arquivoPullRequestOpen = [];
+            var arquivoCommentPullRequestClosed = [];
+            var arquivoCommentPullRequestOpen = [];
             
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
@@ -1255,17 +1438,26 @@
                 arquivoModificada.push(mapFilesChanged[name]);
                 arquivoAdicionado.push(mapFilesAdded[name]);
                 arquivoRemovido.push(mapFilesRemoved[name]);
+                
+                arquivoPullRequestClosed.push(mapFilePullRequestClosed[name]);//numero de pull request fechado por arquivo
+                arquivoPullRequestOpen.push(mapFilePullRequestOpen[name]);//numero de pull request fechado por arquivo
+                arquivoCommentPullRequestClosed.push(mapFileCommentPullRequestClosed[name]);//numero de comment pull request fechado por arquivo
+                arquivoCommentPullRequestOpen.push(mapFileCommentPullRequestOpen[name]);//numero de comment pull request fechado por arquivo
             }
             
             var corrArqDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
             var corrEntMod = spearson.correlation.spearman(arquivoEntropia, arquivoModificada);
             var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
             var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
+            var corrEntPullReqClosed = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestClosed);
+            var corrEntPullReqClosedComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestClosed);
+            var corrEntPullReqOpen = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestOpen);
+            var corrEntPullReqOpenComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestOpen);
             
             var data = [
               {
-                z: [[corrArqDef, corrEntMod,corrEntAdd, corrEntRem], [-1, -1, -1, -1], [-1, -1, -1, -1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas'],
+                z: [[corrArqDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment'],
                 y: ['Entropia', 'Afternoon', 'Evening'],
                 type: 'heatmap'
               }
