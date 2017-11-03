@@ -91,9 +91,23 @@
             <div id="curve_chartlines" style="height: 500px"></div>
         </div>
         
-        <div class="col-md-12" id="div_button_curve" style="display: none;">
+        <div class="col-md-12" id="div_chart_curvepullreq" style="display: none;">
+            <div id="curve_chartpullreq" style="height: 500px"></div>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curve" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeLineChart()">Arquivos/Linhas Alteradas</button>
+            <button type="button" class="btn btn-default" onclick="changeFileChart()">Arquivos</button>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curveLines" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeLineChart()">Linhas modificadas de Arquivos</button>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curvepullreq" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changePullReqChart()">Pull Request</button>
         </div>
         
         <!--<div class="input-group col-md-3">
@@ -179,9 +193,23 @@
             <div id="curve_chart2lines" style="height: 500px"></div>
         </div>
         
-        <div class="col-md-12" id="div_button_curve2" style="display: none;">
+        <div class="col-md-12" id="div_chart_curve2pullreq" style="display: none;">
+            <div id="curve_chart2pullreq" style="height: 500px"></div>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curve2" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeLineChart2()">Arquivos/Linhas Alteradas</button>
+            <button type="button" class="btn btn-default" onclick="changeFileChart2()">Arquivos</button>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curve2Lines" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changeLineChart2()">Linhas Alteradas</button>
+        </div>
+        
+        <div class="col-md-4" id="div_button_curve2pullreq" style="display: none;">
+            <label for="inputdefault"><hr></label>    
+            <button type="button" class="btn btn-default" onclick="changePullReqChart2()">Pull Request</button>
         </div>
         
         <!--
@@ -705,11 +733,16 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Commits','P.R Fechado', 'P.R Aberto']
+                        ['Periodo', 'Quantidade de Arquivos','Commits']
                         
                       ];
             var arrayLine2 = [
                         ['Periodo', 'Linhas modificadas','linhas adicionadas', 'linhas removidas']
+                        
+                      ];
+                      
+            var arrayLine3 = [
+                        ['Periodo', 'P.R closed','P.R open']
                         
                       ];
                       
@@ -774,8 +807,9 @@
                     }
                 }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaPullRequestFechado, contaPullRequestAberto]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
+                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
@@ -801,7 +835,7 @@
               chart.draw(data, options);
             }
             
-             google.charts.load('current', {'packages':['corechart']});
+            google.charts.load('current', {'packages':['corechart']});
             google.charts.setOnLoadCallback(drawChart2lines);
 
             function drawChart2lines() {
@@ -823,7 +857,30 @@
               
               chart.draw(data, options);
             }
-            //fim timeline grafico
+            
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart2pull);
+
+            function drawChart2pull() {
+              var data = google.visualization.arrayToDataTable(arrayLine3);
+              document.getElementById("div_chart_curvepullreq").style.display = "block"
+
+              var options = {
+                title: 'Quantidade de linhas alteradas',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+              };
+
+              var chart = new google.visualization.LineChart(document.getElementById('curve_chartpullreq'));
+              google.visualization.events.addListener(chart, 'ready', myReadyHandler);
+              
+              function myReadyHandler(){
+                document.getElementById("div_chart_curvepullreq").style.display = "none"; 
+              }
+              
+              chart.draw(data, options);
+            }
+            //FIM TIMELINE GRAFICO
             
             //inicio heatmap utvilizar spearman
             var arquivoEntropia = []; //array para guardar a entropia com indexes numerico para files
@@ -1300,11 +1357,16 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits','P.R fechado', 'P.R aberto']
+                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
                         
                       ];
             var arrayLine2 = [
                         ['Periodo', 'Linhas modificadas','linhas adicionadas', 'linhas removidas']
+                        
+                      ];
+                      
+            var arrayLine3 = [
+                        ['Periodo', 'P.R closed','P.R open']
                         
                       ];
                       
@@ -1372,8 +1434,9 @@
                     }
                 }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaPullRequestFechado, contaPullRequestAberto]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
+                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
@@ -1418,7 +1481,30 @@
 
               chart.draw(data, options);
             }
-            //fim timeline grafico
+            
+            google.charts.load('current', {'packages':['corechart']});
+            google.charts.setOnLoadCallback(drawChart2Pull);
+
+            function drawChart2Pull() {
+              var data = google.visualization.arrayToDataTable(arrayLine3);
+              document.getElementById("div_chart_curve2pullreq").style.display = "block"; 
+              
+              var options = {
+                title: 'Pull Request Abertos e Fechados',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+              };
+
+              var chart = new google.visualization.LineChart(document.getElementById('curve_chart2pullreq'));
+              google.visualization.events.addListener(chart, 'ready', myReadyHandler);
+              
+              function myReadyHandler(){
+                document.getElementById("div_chart_curve2pullreq").style.display = "none"; 
+              }
+
+              chart.draw(data, options);
+            }
+            //FIM TIMELINE GRAFICO
             
             //heatmap
             //inicio heatmap utvilizar spearman
@@ -1493,8 +1579,6 @@
         document.getElementById("div_data_final").style.display = "none";
         document.getElementById("div_button").style.display = "none";
         document.getElementById("div_treemap").style.display = "none";
-        document.getElementById("div_chart_curve").style.display = "none";
-        document.getElementById("div_chart_curvelines").style.display = "none";
         document.getElementById("report").style.display = "none";
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
@@ -1503,6 +1587,11 @@
         document.getElementById("div_button_treemap").style.display = "none";
         document.getElementById("divHeat").style.display = "none";
         document.getElementById("div_button_curve").style.display = "none";
+        document.getElementById("div_button_curveLines").style.display = "none";
+        document.getElementById("div_button_curvepullreq").style.display = "none";
+        document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("div_chart_curvelines").style.display = "none";
+        document.getElementById("div_chart_curvepullreq").style.display = "none";
         
         document.getElementById("div_combo2").style.display = "block";
         document.getElementById("div_data_inicial2").style.display = "block";
@@ -1513,18 +1602,17 @@
         document.getElementById("div_table2").style.display = "block";
         document.getElementById("div_button_treemap2").style.display = "block";
         document.getElementById("divHeat2").style.display = "block";
-        document.getElementById("div_button_curve2").style.display = "block";
+        document.getElementById("div_chart_curve2").style.display = 'block';
+        document.getElementById("div_chart_curve2lines").style.display = 'none';
+        document.getElementById("div_chart_curve2pullreq").style.display = 'none';
+        document.getElementById("div_button_curve2").style.display = 'block';
+        document.getElementById("div_button_curve2Lines").style.display = 'block';
+        document.getElementById("div_button_curve2pullreq").style.display = 'block';
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap2").style.display = "block";
         }else{
             document.getElementById("div_treemap_files2").style.display = "block";
-        }
-        
-        if(optionCharLineDisplay == "byNumberLines"){
-            document.getElementById("div_chart_curve2lines").style.display = "block";
-        }else{
-            document.getElementById("div_chart_curve2").style.display = "block";
         }
        
     }
@@ -1550,16 +1638,19 @@
         document.getElementById("div_data_final2").style.display = "none";
         document.getElementById("div_button2").style.display = "none";
         document.getElementById("div_treemap2").style.display = "none";
-        document.getElementById("div_chart_curve2").style.display = "none";
-        document.getElementById("div_chart_curve2lines").style.display = "none";
         document.getElementById("report2").style.display = "none";
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
         document.getElementById("div_treemap_files2").style.display = "none";
         document.getElementById("div_search").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
-        document.getElementById("divHeat2").style.display = "none";
-        document.getElementById("div_button_curve2").style.display = "none";
+        document.getElementById("divHeat2").style.display = "none";  
+        document.getElementById("div_chart_curve2").style.display = 'none';
+        document.getElementById("div_chart_curve2lines").style.display = 'none';
+        document.getElementById("div_chart_curve2pullreq").style.display = 'none';
+        document.getElementById("div_button_curve2").style.display = 'none';
+        document.getElementById("div_button_curve2Lines").style.display = 'none';
+        document.getElementById("div_button_curve2pullreq").style.display = 'none';
         
         document.getElementById("div_combo").style.display = "block";
         document.getElementById("div_data_inicial").style.display = "block";
@@ -1571,17 +1662,16 @@
         document.getElementById("div_table").style.display = "block";
         document.getElementById("divHeat").style.display = "block";
         document.getElementById("div_button_curve").style.display = "block";
+        document.getElementById("div_button_curveLines").style.display = "block";
+        document.getElementById("div_button_curvepullreq").style.display = "block";
+        document.getElementById("div_chart_curve").style.display = "block";
+        document.getElementById("div_chart_curvelines").style.display = "none";
+        document.getElementById("div_chart_curvepullreq").style.display = "none";
         
         if(optionTreemapDisplay == "showByPackage"){
             document.getElementById("div_treemap").style.display = "block";
         }else{
             document.getElementById("div_treemap_files").style.display = "block";
-        }
-        
-        if(optionCharLineDisplay == "byNumberLines"){
-            document.getElementById("div_chart_curvelines").style.display = "block";
-        }else{
-            document.getElementById("div_chart_curve").style.display = "block";
         }
         
     }
@@ -1594,23 +1684,25 @@
         document.getElementById("div_data_final2").style.display = "none";
         document.getElementById("div_button2").style.display = "none";
         document.getElementById("div_treemap2").style.display = "none";
-        document.getElementById("div_chart_curve2").style.display = "none";
-        document.getElementById("div_chart_curve2lines").style.display = "none";
         document.getElementById("report2").style.display = "none";
         document.getElementById("filter2").style.display = "none";
         document.getElementById("div_table2").style.display = "none";
         document.getElementById("div_treemap_files2").style.display = "none";
         document.getElementById("div_button_treemap2").style.display = "none";
         document.getElementById("divHeat2").style.display = "none";
-        document.getElementById("div_button_curve2").style.display = "none";
+        
+        document.getElementById("div_chart_curve2").style.display = 'none';
+        document.getElementById("div_chart_curve2lines").style.display = 'none';
+        document.getElementById("div_chart_curve2pullreq").style.display = 'none';
+        document.getElementById("div_button_curve2").style.display = 'none';
+        document.getElementById("div_button_curve2Lines").style.display = 'none';
+        document.getElementById("div_button_curve2pullreq").style.display = 'none';
         
         document.getElementById("div_combo").style.display = "none";
         document.getElementById("div_data_inicial").style.display = "none";
         document.getElementById("div_data_final").style.display = "none";
         document.getElementById("div_button").style.display = "none";
         document.getElementById("div_treemap").style.display = "none";
-        document.getElementById("div_chart_curve").style.display = "none";
-        document.getElementById("div_chart_curvelines").style.display = "none";
         document.getElementById("report").style.display = "none";
         document.getElementById("filter").style.display = "none";
         document.getElementById("div_table").style.display = "none";
@@ -1618,6 +1710,11 @@
         document.getElementById("div_button_treemap").style.display = "none";
         document.getElementById("divHeat").style.display = "none";
         document.getElementById("div_button_curve").style.display = "none";
+        document.getElementById("div_button_curveLines").style.display = "none";
+        document.getElementById("div_button_curvepullreq").style.display = "none";
+        document.getElementById("div_chart_curve").style.display = "none";
+        document.getElementById("div_chart_curvelines").style.display = "none";
+        document.getElementById("div_chart_curvepullreq").style.display = "none";
     }
     
     function changeTreemap(){
@@ -1644,28 +1741,40 @@
         }
     }
     
-    function changeLineChart(){
-        var display = document.getElementById("div_chart_curve").style.display;
-        if(display == "none"){
+    function changeFileChart(){
             document.getElementById("div_chart_curve").style.display = 'block';
             document.getElementById("div_chart_curvelines").style.display = 'none';
-        }
-        else{
+            document.getElementById("div_chart_curvepullreq").style.display = 'none';
+    }
+    
+    function changeLineChart(){
             document.getElementById("div_chart_curve").style.display = 'none';
             document.getElementById("div_chart_curvelines").style.display = 'block';
-        }
+            document.getElementById("div_chart_curvepullreq").style.display = 'none';
+    }
+    
+    function changePullReqChart(){
+            document.getElementById("div_chart_curve").style.display = 'none';
+            document.getElementById("div_chart_curvelines").style.display = 'none';
+            document.getElementById("div_chart_curvepullreq").style.display = 'block';
+    }
+    
+    function changeFileChart2(){
+            document.getElementById("div_chart_curve2").style.display = 'block';
+            document.getElementById("div_chart_curve2lines").style.display = 'none';
+            document.getElementById("div_chart_curve2pullreq").style.display = 'none';
     }
     
     function changeLineChart2(){
-        var display = document.getElementById("div_chart_curve2").style.display;
-        if(display == "none"){
-            document.getElementById("div_chart_curve2").style.display = 'block';
-            document.getElementById("div_chart_curve2lines").style.display = 'none';
-        }
-        else{
             document.getElementById("div_chart_curve2").style.display = 'none';
             document.getElementById("div_chart_curve2lines").style.display = 'block';
-        }
+            document.getElementById("div_chart_curve2pullreq").style.display = 'none';
+    }
+    
+    function changePullReqChart2(){
+            document.getElementById("div_chart_curve2").style.display = 'none';
+            document.getElementById("div_chart_curve2lines").style.display = 'none';
+            document.getElementById("div_chart_curve2pullreq").style.display = 'block';
     }
     
     function preencheCombo(){
@@ -1711,14 +1820,6 @@
     }
     
     </script>
-    <!-- Tabela que lista arquivos e mostra as metricas desses arquivos: entropia, numero de defeitos etc (tcc)
-        Um texto com numero de commits no periodo, valor da entropia media, valor de defeito médio, defeito maximo, numero de author
-        Visualização treemap: escolher uma metrica para pintar treemap. colocar valores na legenda, dividindo em 5 partes iguais
     
-        Colocar code churn, line added, line removed na tabela
-    
-        contar defeitos, analisar qualquer commit
-    
-    -->
     </body>
 </html>
