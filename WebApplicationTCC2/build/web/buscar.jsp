@@ -126,7 +126,7 @@
             <input type="text"class="form-control" id="myInput" onkeyup="myFilter()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" style="height:120px; overflow:auto;display: none;" id="div_table">
+        <div class="col-md-12" style="height:130px; overflow:auto;display: none;" id="div_table">
          <table id="teste2" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -139,14 +139,14 @@
               <th>P.R Closed Comment</th>
               <th>P.R Opened</th>
               <th>P.R Opened Comment</th>
-              <th>Ownership<th>
-              <th>Exp<th>
+              <th>Ownership</th>
+              <th>Exp</th>
             </tr>
          </table>
         </div>
         
         <div class="col-md-12" id="divHeat" style="display: none;">
-            <div id="fieldHeat" style="height: 300px;"></div>
+            <div id="fieldHeat" style="height: 500px;"></div>
         </div>
         
         
@@ -755,7 +755,6 @@
                 cell10.innerHTML = mapFileCommentPullRequestOpen[name];
                 cell11.innerHTML = mapOwnershipFile[name];
                 cell12.innerHTML = mapExperienceFile[name];
-                //var tf1 = setFilterGrid("teste2");
             }
             
             //for para dividir em pastas, pacotes
@@ -1035,7 +1034,6 @@
             var corrEntMod = spearson.correlation.spearman(arquivoEntropia, arquivoModificada);
             var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
             var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
-            
             var corrEntPullReqClosed = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestClosed);
             var corrEntPullReqClosedComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestClosed);
             var corrEntPullReqOpen = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestOpen);
@@ -1043,17 +1041,83 @@
             var corrEntOwner = spearson.correlation.spearman(arquivoEntropia, arquivoOwnership);
             var corrEntExp = spearson.correlation.spearman(arquivoEntropia, arquivoExperience);
             
+            var defLinMod = spearson.correlation.spearman(arquivoDefeito, arquivoModificada);
+            var defLinAdd = spearson.correlation.spearman(arquivoDefeito, arquivoAdicionado);
+            var defLinRemove = spearson.correlation.spearman(arquivoDefeito, arquivoRemovido);
+            var defPRClosed = spearson.correlation.spearman(arquivoDefeito, arquivoPullRequestClosed);
+            var defCommentClosed = spearson.correlation.spearman(arquivoDefeito, arquivoCommentPullRequestClosed);
+            var defPROpen = spearson.correlation.spearman(arquivoDefeito, arquivoPullRequestOpen);
+            var defCommentOpen = spearson.correlation.spearman(arquivoDefeito, arquivoCommentPullRequestOpen);
+            var defOwnership = spearson.correlation.spearman(arquivoDefeito, arquivoOwnership);
+            var defExperience = spearson.correlation.spearman(arquivoDefeito, arquivoExperience);
+            
+            var modAdd = spearson.correlation.spearman(arquivoModificada, arquivoAdicionado);
+            var modRem = spearson.correlation.spearman(arquivoModificada, arquivoRemovido);
+            var modPRClosed = spearson.correlation.spearman(arquivoModificada, arquivoPullRequestClosed);
+            var modCommentClosed = spearson.correlation.spearman(arquivoModificada, arquivoCommentPullRequestClosed);
+            var modPROpen = spearson.correlation.spearman(arquivoModificada, arquivoPullRequestOpen);
+            var modCommentOpen = spearson.correlation.spearman(arquivoModificada, arquivoCommentPullRequestOpen);
+            var modOwnership = spearson.correlation.spearman(arquivoModificada, arquivoOwnership);
+            var modExperience = spearson.correlation.spearman(arquivoModificada, arquivoExperience);
+            
+            var addRem = spearson.correlation.spearman(arquivoAdicionado, arquivoRemovido);
+            var addPRClosed = spearson.correlation.spearman(arquivoAdicionado, arquivoPullRequestClosed);
+            var addCommentClosed = spearson.correlation.spearman(arquivoAdicionado, arquivoCommentPullRequestClosed);
+            var addPROpen = spearson.correlation.spearman(arquivoAdicionado, arquivoPullRequestOpen);
+            var addCommentOpen = spearson.correlation.spearman(arquivoAdicionado, arquivoCommentPullRequestOpen);
+            var addOwnership = spearson.correlation.spearman(arquivoAdicionado, arquivoOwnership);
+            var addExperience = spearson.correlation.spearman(arquivoAdicionado, arquivoExperience);
+            
+            var remPRClosed = spearson.correlation.spearman(arquivoRemovido, arquivoPullRequestClosed);
+            var remCommentClosed = spearson.correlation.spearman(arquivoRemovido, arquivoCommentPullRequestClosed);
+            var remPROpen = spearson.correlation.spearman(arquivoRemovido, arquivoPullRequestOpen);
+            var remCommentOpen = spearson.correlation.spearman(arquivoRemovido, arquivoCommentPullRequestOpen);
+            var remOwnership = spearson.correlation.spearman(arquivoRemovido, arquivoOwnership);
+            var remExperience = spearson.correlation.spearman(arquivoRemovido, arquivoExperience);
+            
+            var prclosedCommentClosed = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoCommentPullRequestClosed);
+            var prclosedPROpen = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoPullRequestOpen);
+            var prclosedCommentOpen = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoCommentPullRequestOpen);
+            var prclosedOwnership = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoOwnership);
+            var prclosedExperience = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoExperience);
+            
+            var prclosedcommentPROpen = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoPullRequestOpen);
+            var prclosedcommentCommentOpen = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoCommentPullRequestOpen);
+            var prclosedcommentOwnership = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoOwnership);
+            var prclosedcommentExperience = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoExperience);
+            
+            var propenCommentOpen = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoCommentPullRequestOpen);
+            var propenOwnership = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoOwnership);
+            var propenExperience = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoExperience);
+            
+            var propencommentOwnership = spearson.correlation.spearman(arquivoCommentPullRequestOpen, arquivoOwnership);
+            var propencommentExperience = spearson.correlation.spearman(arquivoCommentPullRequestOpen, arquivoExperience);
+            
+            var ownershipExperience = spearson.correlation.spearman(arquivoOwnership, arquivoExperience);
+            
             var data = [
               {
-                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment, corrEntOwner, corrEntExp], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
+                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment, corrEntOwner, corrEntExp],
+                    [null,defLinMod,defLinAdd,defLinRemove,defPRClosed,defCommentClosed,defPROpen,defCommentOpen,defOwnership,defExperience], 
+                    [null,null,modAdd,modRem,modPRClosed,modCommentClosed,modPROpen,modCommentOpen,modOwnership,modExperience],
+                    [null,null,null,addRem,addPRClosed,addCommentClosed,addPROpen,addCommentOpen,addOwnership,addExperience],
+                    [null,null,null,null,remPRClosed,remCommentClosed,remPROpen,remCommentOpen,remOwnership,remExperience],
+                    [null,null,null,null,null,prclosedCommentClosed,prclosedPROpen,prclosedCommentOpen,prclosedOwnership,prclosedExperience],
+                    [null,null,null,null,null,null,prclosedcommentPROpen,prclosedcommentCommentOpen,prclosedcommentOwnership,prclosedcommentExperience],
+                    [null,null,null,null,null,null,null,propenCommentOpen,propenOwnership,propenExperience],
+                    [null,null,null,null,null,null,null,null,propencommentOwnership,propencommentExperience],
+                    [null,null,null,null,null,null,null,null,null,ownershipExperience]
+                    ],
                 x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner', 'exp'],
-                y: ['Entropia', 'Afternoon', 'Evening'],
-                type: 'heatmap'
+                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner'],
+                type: 'heatmap',
+                zmin: -1,
+                zmax: 1
               }
             ];
 
           Plotly.newPlot('fieldHeat', data);
-          //Fim treemap
+          //Fim HEATMAP
         }
     
         </script>
