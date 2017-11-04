@@ -23,12 +23,15 @@
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
               <div class="navbar-header">
-                <a class="navbar-brand" href="#">WebSiteName</a>
+                <a class="navbar-brand" href="#">Github Metrics</a>
               </div>
               <ul class="nav navbar-nav">
                 <li><a href="#" onclick="showhome()">Home</a></li>
                 <li><a href="#" onclick="shownav1()">Projeto 1</a></li>
                 <li><a href="#" onclick="shownav2()">Projeto 2</a></li>
+                <li><a href="#" onclick="showtreemap()">TreeMap</a></li>
+                <li><a href="#" onclick="showlinechart()">Line Chart</a></li>
+                <li><a href="#" onclick="showheatmap()">Heatmap</a></li>
               </ul>
             </div>
         </nav>
@@ -57,17 +60,17 @@
         
         <div class="col-md-4" id="div_data_inicial" style="display: none;">
             <label for="inputdefault">Data Inicial:</label>
-            <input type="text" class="form-control" id="dateStart" placeholder="Data inicial" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" id="dateStart" placeholder="YYYY-MM-DD" aria-describedby="basic-addon1">
         </div>
         
         <div class="col-md-4" id="div_data_final" style="display: none;">
             <label for="inputdefault">Data final:</label>
-            <input type="text" class="form-control" id="dateEnd" placeholder="Data final" aria-describedby="basic-addon1">
+            <input type="text" class="form-control" id="dateEnd" placeholder="YYYY-MM-DD" aria-describedby="basic-addon1">
         </div>
         
         <div class="col-md-4" id="div_button" style="display: none;">
-            <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="gerarVisualizacao2()">Calcular</button>
+            <label for="inputdefault"></label> 
+            <button type="button" class="btn btn-default btn-block" onclick="gerarVisualizacao2()">Calcular</button>
         </div>
 
         <div class="col-md-12" id="div_treemap" style="display: none;">
@@ -80,7 +83,7 @@
         
         <div class="col-md-12" id="div_button_treemap" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeTreemap()">Pacote/Arquivos</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeTreemap()">Pacote/Arquivos</button>
         </div>
         
         <div class="col-md-12" id="div_chart_curve" style="display: none;">
@@ -97,17 +100,17 @@
         
         <div class="col-md-4" id="div_button_curve" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeFileChart()">Arquivos</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeFileChart()">Commits</button>
         </div>
         
         <div class="col-md-4" id="div_button_curveLines" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeLineChart()">Linhas modificadas de Arquivos</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeLineChart()">Linhas modificadas de Arquivos</button>
         </div>
         
         <div class="col-md-4" id="div_button_curvepullreq" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changePullReqChart()">Pull Request</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changePullReqChart()">Pull Request</button>
         </div>
         
         <!--<div class="input-group col-md-3">
@@ -118,8 +121,13 @@
         <div class="col-md-12" id="report" style="display: none;">
             <p><br><br><br></p>
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
-            <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span>
-            Número total de Pull Requests fechados no peŕiodo é <span id="pullrequestclosed"></span></p>
+            <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span>.
+            Número total de Pull Requests fechados no peŕiodo é <span id="pullrequestclosed"></span>.
+            Número total de autores é <span id="numberauthor"></span>.
+            Autor com maior numero de commits é <span id="ownership"></span>.
+            Author Owner fez <span id="numberownership"></span> commits.
+            Autor com maior experiência é <span id="experience"></span>.
+            </p>
         </div>
         
         <div class="col-md-12" id="filter" style="display: none;">
@@ -146,6 +154,8 @@
         </div>
         
         <div class="col-md-12" id="divHeat" style="display: none;">
+            <hr>
+            <h4><br><br><br>Heatmap de correlação entre métricas</h4>
             <div id="fieldHeat" style="height: 500px;"></div>
         </div>
         
@@ -184,7 +194,7 @@
         
         <div class="col-md-12" id="div_button_treemap2" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeTreemap2()">Pacote/Arquivos</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeTreemap2()">Pacote/Arquivos</button>
         </div>
         
         <div class="col-md-12" id="div_chart_curve2" style="display: none;">
@@ -201,17 +211,17 @@
         
         <div class="col-md-4" id="div_button_curve2" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeFileChart2()">Arquivos</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeFileChart2()">Arquivos</button>
         </div>
         
         <div class="col-md-4" id="div_button_curve2Lines" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changeLineChart2()">Linhas Alteradas</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changeLineChart2()">Linhas Alteradas</button>
         </div>
         
         <div class="col-md-4" id="div_button_curve2pullreq" style="display: none;">
             <label for="inputdefault"><hr></label>    
-            <button type="button" class="btn btn-default" onclick="changePullReqChart2()">Pull Request</button>
+            <button type="button" class="btn btn-default btn-block" onclick="changePullReqChart2()">Pull Request</button>
         </div>
         
         <!--
@@ -225,14 +235,19 @@
             <p><br><br><br></p>
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
             <p>O numero total de commits no período é <span id="numbercommit2"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest2"></span>.
-            Número total de Pull Requests fechado no peŕiodo é <span id="pullrequestclosed2"></span></p>
+            Número total de Pull Requests fechado no peŕiodo é <span id="pullrequestclosed2"></span>
+            Número total de autores é <span id="numberauthor2"></span>.
+            Autor com maior numero de commits é <span id="ownership2"></span>.
+            Author Owner fez <span id="numberownership2"></span> commits.
+            Autor com maior experiência é <span id="experience2"></span>.
+            </p>
         </div>
         
         <div class="col-md-12" id="filter2" style="display: none;">
             <input type="text" class="form-control" id="myInput2" onkeyup="myFilter2()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" id="div_table2" style="height:120px; overflow:auto; display: none;" >
+        <div class="col-md-12" id="div_table2" style="height:130px; overflow:auto; display: none;" >
          <table id="table2" cellspacing="0" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -245,12 +260,16 @@
               <th>P.R Closed Comment</th>
               <th>P.R Opened</th>
               <th>P.R Opened Comment</th>
+              <th>Ownership</th>
+              <th>Exp</th>
             </tr>
          </table>
         </div>
         
         <div class="col-md-12" id="divHeat2" style="display: none;">
-        <div id="fieldHeat2" style="height: 300px;"></div>
+            <hr>
+            <h4><br><br><br>Heatmap de correlação entre métricas</h4>
+            <div id="fieldHeat2" style="height: 500px;"></div>
         </div>
         
         
@@ -554,6 +573,7 @@
             
             //CONTAR QUANTIDADE DE COMMITS DE CADA AUTOR
             var mapAuthorship = {}; //Armazenar quantidade de commits de cada autor
+            var countAuthor = 0;
             for (i = 0; i < listcommit.length; i++) {
                 var author = listcommit[i].author;
                 
@@ -561,8 +581,12 @@
                     mapAuthorship[author] = mapAuthorship[author] + 1;
                 }else{
                     mapAuthorship[author] = 1;
+                    countAuthor = countAuthor +1
                 }
             }
+            
+            var authortext = document.getElementById('numberauthor');
+            authortext.innerHTML = countAuthor;
             
             var nameOwner;
             var maxvalue = 0;
@@ -572,6 +596,12 @@
                     maxvalue = mapAuthorship[name];
                 }
             }
+            
+            var authorownertext = document.getElementById('ownership');
+            authorownertext.innerHTML = nameOwner;
+            
+            var authorownernumbertext = document.getElementById('numberownership');
+            authorownernumbertext.innerHTML = mapAuthorship[nameOwner];
             
             console.log(mapAuthorship);
             console.log(nameOwner);
@@ -631,6 +661,9 @@
                     maxvalueex = mapExperience[name];
                 }
             }
+            
+            var authorexptext = document.getElementById('experience');
+            authorexptext.innerHTML = nameSenior;
             
              //contar quantas vezes cada arquivo foi commitado pelo usuario com mais experiencia
             for (i = 0; i < listcommit.length; i++) {
@@ -850,7 +883,7 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Commits']
+                        ['Periodo', 'Quantidade de Arquivos','Commits', 'Owner Commits']
                         
                       ];
             var arrayLine2 = [
@@ -885,6 +918,7 @@
                 var contaPullRequestAberto = 0;
                 var contaCommentPullRequestFechado = 0;
                 var contaCommentPullRequestAberto = 0;
+                var contaCommitOwner = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -892,6 +926,11 @@
                     
                     if(date < dPeriodo && date >= dInicio){
                         contaCommit = contaCommit + 1;
+                        
+                        if(listcommit[i].author == nameOwner){
+                            contaCommitOwner = contaCommitOwner + 1; 
+                        }
+                        
                         var shaCommit = listcommit[i].sha;
                         for (j = 0; j < returnedJson.length; j++) {
                         //ver quais arquivos tem o mesmo sha e incrementar no map
@@ -928,7 +967,7 @@
                     }
                 }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto,contaCommentPullRequestFechado,contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
@@ -964,7 +1003,7 @@
               document.getElementById("div_chart_curvelines").style.display = "block"
 
               var options = {
-                title: 'Quantidade de linhas alteradas',
+                title: 'Quantidade de linhas alteradas no período',
                 curveType: 'function',
                 legend: { position: 'bottom' }
               };
@@ -987,7 +1026,7 @@
               document.getElementById("div_chart_curvepullreq").style.display = "block"
 
               var options = {
-                title: 'Quantidade de linhas alteradas',
+                title: 'Quantidade de Pull Request no peŕiodo',
                 curveType: 'function',
                 legend: { position: 'bottom' }
               };
@@ -1313,6 +1352,8 @@
             var mapFileCommentPullRequestClosed = {};//numero de comment pull request fechado por arquivo
             var mapFilePullRequestOpen = {};//numero de pull request fechado por arquivo
             var mapFileCommentPullRequestOpen = {};//numero de comment pull request fechado por arquivo
+            var mapOwnershipFile = {}; //quantas vezes arquivo foi comitado pelo owner
+            var mapExperienceFile = {}; //quantas vezes arquivo foi comitado pelo mais experiente
             
             //data.length
             for (i = 0; i < returnedJson.length; i++) { 
@@ -1427,6 +1468,130 @@
             //FIM CONTAGEM PULL ABERTO E FECHADO E COMENTARIOS
             
             
+            //CONTAR QUANTIDADE DE COMMITS DE CADA AUTOR
+            var mapAuthorship = {}; //Armazenar quantidade de commits de cada autor
+            var countAuthor = 0;
+            for (i = 0; i < listcommit.length; i++) {
+                var author = listcommit[i].author;
+                
+                if (author in mapAuthorship){
+                    mapAuthorship[author] = mapAuthorship[author] + 1;
+                }else{
+                    mapAuthorship[author] = 1;
+                    countAuthor = countAuthor +1
+                }
+            }
+            
+            var authortext = document.getElementById('numberauthor2');
+            authortext.innerHTML = countAuthor;
+            
+            var nameOwner;
+            var maxvalue = 0;
+            for(var name in mapAuthorship){
+                if(mapAuthorship[name] > maxvalue){
+                    nameOwner = name;
+                    maxvalue = mapAuthorship[name];
+                }
+            }
+            
+            var authorownertext = document.getElementById('ownership2');
+            authorownertext.innerHTML = nameOwner;
+            
+            var authorownernumbertext = document.getElementById('numberownership2');
+            authorownernumbertext.innerHTML = mapAuthorship[nameOwner];
+            
+            console.log(mapAuthorship);
+            console.log(nameOwner);
+            
+            //contar quantas vezes cada arquivo foi commitado pelo owner
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                //quais arquivos foram comitados pelo owner do periodo
+                if(listcommit[i].author == nameOwner){
+                    
+                    for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                        if(shacommit === returnedJson[j].shaFile){
+                            if(returnedJson[j].nameFile in mapOwnershipFile){
+                                mapOwnershipFile[returnedJson[j].nameFile] = mapOwnershipFile[returnedJson[j].nameFile] + 1;
+                            }else{
+                                mapOwnershipFile[returnedJson[j].nameFile] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            //setar 0 para os demais arquivo que nao entraram na lista
+            for (i = 0; i < returnedJson.length; i++) { 
+                if(!(returnedJson[i].nameFile in mapOwnershipFile)){
+                    mapOwnershipFile[returnedJson[i].nameFile] = 0;
+                }
+            }
+            
+            console.log(mapOwnershipFile);
+            //FIM OWNERSHIP
+            
+            //CONTAR EXPERIENCE DE CADA AUTOR EM UM PERIODO
+            var mapExperience = {};//armazena experience de cada autor
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                    if(shacommit === returnedJson[j].shaFile){
+                        
+                        if(listcommit[i].author in mapExperience){
+                            mapExperience[listcommit[i].author] = mapExperience[listcommit[i].author] + returnedJson[j].lineChanged;
+                        }else{
+                            mapExperience[listcommit[i].author] = returnedJson[j].lineChanged;
+                        }
+                        
+                    }
+                }
+                
+            }
+            
+            var nameSenior;
+            var maxvalueex = 0;
+            for(var name in mapExperience){
+                if(mapExperience[name] > maxvalueex){
+                    nameSenior = name;
+                    maxvalueex = mapExperience[name];
+                }
+            }
+            
+            var authorexptext = document.getElementById('experience2');
+            authorexptext.innerHTML = nameSenior;
+            
+             //contar quantas vezes cada arquivo foi commitado pelo usuario com mais experiencia
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                //quais arquivos foram comitados pelo usuario com mais experiencia
+                if(listcommit[i].author == nameSenior){
+                    
+                    for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                        if(shacommit === returnedJson[j].shaFile){
+                            if(returnedJson[j].nameFile in mapExperienceFile){
+                                mapExperienceFile[returnedJson[j].nameFile] = mapExperienceFile[returnedJson[j].nameFile] + 1;
+                            }else{
+                                mapExperienceFile[returnedJson[j].nameFile] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //setar 0 para os demais arquivo que nao entraram na lista
+            for (i = 0; i < returnedJson.length; i++) { 
+                if(!(returnedJson[i].nameFile in mapExperienceFile)){
+                    mapExperienceFile[returnedJson[i].nameFile] = 0;
+                }
+            }
+            
+            console.log(mapExperience);
+            console.log(nameSenior);
+            //FIM EXPERIENCE
+            
             for (var name in mapFiles) {
                 treeMapArrayFiles.push([name, 'Project',mapFiles[name],mapFiles[name]]);
                 
@@ -1442,6 +1607,8 @@
                 var cell8 = row.insertCell(7);
                 var cell9 = row.insertCell(8);
                 var cell10 = row.insertCell(9);
+                var cell11 = row.insertCell(10);
+                var cell12 = row.insertCell(11);
 
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
@@ -1453,6 +1620,8 @@
                 cell8.innerHTML = mapFileCommentPullRequestClosed[name];
                 cell9.innerHTML = mapFilePullRequestOpen[name];
                 cell10.innerHTML = mapFileCommentPullRequestOpen[name];
+                cell11.innerHTML = mapOwnershipFile[name];
+                cell12.innerHTML = mapExperienceFile[name];
             }
             
             //for para dividir em pastas, pacotes
@@ -1547,7 +1716,7 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits']
+                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits', 'Commits Owner']
                         
                       ];
             var arrayLine2 = [
@@ -1584,6 +1753,7 @@
                 var contaPullRequestAberto = 0;
                 var contaCommentPullRequestFechado = 0;
                 var contaCommentPullRequestAberto = 0;
+                var contaCommitOwner = 0;
                 
                 //Contar commit e linhas a cada 15 dias
                 for (i = 0; i < listcommit.length; i++) {
@@ -1593,6 +1763,11 @@
                     if(date < dPeriodo && date >= dInicio){
                         contaCommit = contaCommit + 1;
                         var shaCommit = listcommit[i].sha;
+                        
+                        if(listcommit[i].author == nameOwner){
+                            contaCommitOwner = contaCommitOwner + 1; 
+                        }
+                        
                         for (j = 0; j < returnedJson.length; j++) {
                         //ver quais arquivos tem o mesmo sha e incrementar no map
                             if(shaCommit === returnedJson[j].shaFile){
@@ -1628,7 +1803,7 @@
                     }
                 }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto, contaCommentPullRequestFechado, contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
@@ -1711,6 +1886,8 @@
             var arquivoPullRequestOpen = [];
             var arquivoCommentPullRequestClosed = [];
             var arquivoCommentPullRequestOpen = [];
+            var arquivoOwnership = [];
+            var arquivoExperience = [];
             
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
@@ -1723,9 +1900,11 @@
                 arquivoPullRequestOpen.push(mapFilePullRequestOpen[name]);//numero de pull request fechado por arquivo
                 arquivoCommentPullRequestClosed.push(mapFileCommentPullRequestClosed[name]);//numero de comment pull request fechado por arquivo
                 arquivoCommentPullRequestOpen.push(mapFileCommentPullRequestOpen[name]);//numero de comment pull request fechado por arquivo
+                arquivoOwnership.push(mapOwnershipFile[name]);
+                arquivoExperience.push(mapExperienceFile[name]);
             }
             
-            var corrArqDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
+            var corrEntDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
             var corrEntMod = spearson.correlation.spearman(arquivoEntropia, arquivoModificada);
             var corrEntAdd = spearson.correlation.spearman(arquivoEntropia, arquivoAdicionado);
             var corrEntRem = spearson.correlation.spearman(arquivoEntropia, arquivoRemovido);
@@ -1733,13 +1912,81 @@
             var corrEntPullReqClosedComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestClosed);
             var corrEntPullReqOpen = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestOpen);
             var corrEntPullReqOpenComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestOpen);
+            var corrEntOwner = spearson.correlation.spearman(arquivoEntropia, arquivoOwnership);
+            var corrEntExp = spearson.correlation.spearman(arquivoEntropia, arquivoExperience);
+            
+            var defLinMod = spearson.correlation.spearman(arquivoDefeito, arquivoModificada);
+            var defLinAdd = spearson.correlation.spearman(arquivoDefeito, arquivoAdicionado);
+            var defLinRemove = spearson.correlation.spearman(arquivoDefeito, arquivoRemovido);
+            var defPRClosed = spearson.correlation.spearman(arquivoDefeito, arquivoPullRequestClosed);
+            var defCommentClosed = spearson.correlation.spearman(arquivoDefeito, arquivoCommentPullRequestClosed);
+            var defPROpen = spearson.correlation.spearman(arquivoDefeito, arquivoPullRequestOpen);
+            var defCommentOpen = spearson.correlation.spearman(arquivoDefeito, arquivoCommentPullRequestOpen);
+            var defOwnership = spearson.correlation.spearman(arquivoDefeito, arquivoOwnership);
+            var defExperience = spearson.correlation.spearman(arquivoDefeito, arquivoExperience);
+            
+            var modAdd = spearson.correlation.spearman(arquivoModificada, arquivoAdicionado);
+            var modRem = spearson.correlation.spearman(arquivoModificada, arquivoRemovido);
+            var modPRClosed = spearson.correlation.spearman(arquivoModificada, arquivoPullRequestClosed);
+            var modCommentClosed = spearson.correlation.spearman(arquivoModificada, arquivoCommentPullRequestClosed);
+            var modPROpen = spearson.correlation.spearman(arquivoModificada, arquivoPullRequestOpen);
+            var modCommentOpen = spearson.correlation.spearman(arquivoModificada, arquivoCommentPullRequestOpen);
+            var modOwnership = spearson.correlation.spearman(arquivoModificada, arquivoOwnership);
+            var modExperience = spearson.correlation.spearman(arquivoModificada, arquivoExperience);
+            
+            var addRem = spearson.correlation.spearman(arquivoAdicionado, arquivoRemovido);
+            var addPRClosed = spearson.correlation.spearman(arquivoAdicionado, arquivoPullRequestClosed);
+            var addCommentClosed = spearson.correlation.spearman(arquivoAdicionado, arquivoCommentPullRequestClosed);
+            var addPROpen = spearson.correlation.spearman(arquivoAdicionado, arquivoPullRequestOpen);
+            var addCommentOpen = spearson.correlation.spearman(arquivoAdicionado, arquivoCommentPullRequestOpen);
+            var addOwnership = spearson.correlation.spearman(arquivoAdicionado, arquivoOwnership);
+            var addExperience = spearson.correlation.spearman(arquivoAdicionado, arquivoExperience);
+            
+            var remPRClosed = spearson.correlation.spearman(arquivoRemovido, arquivoPullRequestClosed);
+            var remCommentClosed = spearson.correlation.spearman(arquivoRemovido, arquivoCommentPullRequestClosed);
+            var remPROpen = spearson.correlation.spearman(arquivoRemovido, arquivoPullRequestOpen);
+            var remCommentOpen = spearson.correlation.spearman(arquivoRemovido, arquivoCommentPullRequestOpen);
+            var remOwnership = spearson.correlation.spearman(arquivoRemovido, arquivoOwnership);
+            var remExperience = spearson.correlation.spearman(arquivoRemovido, arquivoExperience);
+            
+            var prclosedCommentClosed = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoCommentPullRequestClosed);
+            var prclosedPROpen = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoPullRequestOpen);
+            var prclosedCommentOpen = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoCommentPullRequestOpen);
+            var prclosedOwnership = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoOwnership);
+            var prclosedExperience = spearson.correlation.spearman(arquivoPullRequestClosed, arquivoExperience);
+            
+            var prclosedcommentPROpen = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoPullRequestOpen);
+            var prclosedcommentCommentOpen = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoCommentPullRequestOpen);
+            var prclosedcommentOwnership = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoOwnership);
+            var prclosedcommentExperience = spearson.correlation.spearman(arquivoCommentPullRequestClosed, arquivoExperience);
+            
+            var propenCommentOpen = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoCommentPullRequestOpen);
+            var propenOwnership = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoOwnership);
+            var propenExperience = spearson.correlation.spearman(arquivoPullRequestOpen, arquivoExperience);
+            
+            var propencommentOwnership = spearson.correlation.spearman(arquivoCommentPullRequestOpen, arquivoOwnership);
+            var propencommentExperience = spearson.correlation.spearman(arquivoCommentPullRequestOpen, arquivoExperience);
+            
+            var ownershipExperience = spearson.correlation.spearman(arquivoOwnership, arquivoExperience);
             
             var data = [
               {
-                z: [[corrArqDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment'],
-                y: ['Entropia', 'Afternoon', 'Evening'],
-                type: 'heatmap'
+                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment, corrEntOwner, corrEntExp],
+                    [null,defLinMod,defLinAdd,defLinRemove,defPRClosed,defCommentClosed,defPROpen,defCommentOpen,defOwnership,defExperience], 
+                    [null,null,modAdd,modRem,modPRClosed,modCommentClosed,modPROpen,modCommentOpen,modOwnership,modExperience],
+                    [null,null,null,addRem,addPRClosed,addCommentClosed,addPROpen,addCommentOpen,addOwnership,addExperience],
+                    [null,null,null,null,remPRClosed,remCommentClosed,remPROpen,remCommentOpen,remOwnership,remExperience],
+                    [null,null,null,null,null,prclosedCommentClosed,prclosedPROpen,prclosedCommentOpen,prclosedOwnership,prclosedExperience],
+                    [null,null,null,null,null,null,prclosedcommentPROpen,prclosedcommentCommentOpen,prclosedcommentOwnership,prclosedcommentExperience],
+                    [null,null,null,null,null,null,null,propenCommentOpen,propenOwnership,propenExperience],
+                    [null,null,null,null,null,null,null,null,propencommentOwnership,propencommentExperience],
+                    [null,null,null,null,null,null,null,null,null,ownershipExperience]
+                    ],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner', 'exp'],
+                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner'],
+                type: 'heatmap',
+                zmin: -1,
+                zmax: 1
               }
             ];
 
@@ -1909,6 +2156,59 @@
         document.getElementById("div_chart_curve").style.display = "none";
         document.getElementById("div_chart_curvelines").style.display = "none";
         document.getElementById("div_chart_curvepullreq").style.display = "none";
+    }
+    
+    function showtreemap(){
+        showhome();
+        document.getElementById("div_search").style.display = "none";
+        
+        document.getElementById("div_combo2").style.display = "block";
+        document.getElementById("div_data_inicial2").style.display = "block";
+        document.getElementById("div_data_final2").style.display = "block";
+        document.getElementById("div_treemap_files2").style.display = "block";
+        document.getElementById("div_button_treemap2").style.display = "block";
+        
+        document.getElementById("div_combo").style.display = "block";
+        document.getElementById("div_data_inicial").style.display = "block";
+        document.getElementById("div_data_final").style.display = "block";
+        document.getElementById("div_treemap_files").style.display = "block";
+        document.getElementById("div_button_treemap").style.display = "block";
+    }
+    
+    function showlinechart(){
+        showhome();
+        document.getElementById("div_search").style.display = "none";
+        
+        document.getElementById("div_combo2").style.display = "block";
+        document.getElementById("div_data_inicial2").style.display = "block";
+        document.getElementById("div_data_final2").style.display = "block";
+        document.getElementById("div_button_curve2").style.display = 'block';
+        document.getElementById("div_button_curve2Lines").style.display = 'block';
+        document.getElementById("div_button_curve2pullreq").style.display = 'block';
+        document.getElementById("div_chart_curve2").style.display = "block";
+        
+        document.getElementById("div_combo").style.display = "block";
+        document.getElementById("div_data_inicial").style.display = "block";
+        document.getElementById("div_data_final").style.display = "block";
+        document.getElementById("div_button_curve").style.display = "block";
+        document.getElementById("div_button_curveLines").style.display = "block";
+        document.getElementById("div_button_curvepullreq").style.display = "block";
+        document.getElementById("div_chart_curve").style.display = "block";
+    }
+    
+    function showheatmap(){
+        showhome();
+        document.getElementById("div_search").style.display = "none";
+        
+        document.getElementById("div_combo2").style.display = "block";
+        document.getElementById("div_data_inicial2").style.display = "block";
+        document.getElementById("div_data_final2").style.display = "block";
+        document.getElementById("divHeat2").style.display = "block";
+        
+        document.getElementById("div_combo").style.display = "block";
+        document.getElementById("div_data_inicial").style.display = "block";
+        document.getElementById("div_data_final").style.display = "block";
+        document.getElementById("divHeat").style.display = "block";
     }
     
     function changeTreemap(){
