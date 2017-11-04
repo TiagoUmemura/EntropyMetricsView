@@ -139,6 +139,8 @@
               <th>P.R Closed Comment</th>
               <th>P.R Opened</th>
               <th>P.R Opened Comment</th>
+              <th>Ownership<th>
+              <th>Exp<th>
             </tr>
          </table>
         </div>
@@ -496,6 +498,8 @@
             var mapFileCommentPullRequestClosed = {};//numero de comment pull request fechado por arquivo
             var mapFilePullRequestOpen = {};//numero de pull request fechado por arquivo
             var mapFileCommentPullRequestOpen = {};//numero de comment pull request fechado por arquivo
+            var mapOwnershipFile = {};
+            var mapExperienceFile = {};
             
             //Contar quantas vezes os arquivos (files) foram modificados
             //Contagem de linhas modificadas e quantas vezes o arquivo foi comitado
@@ -513,7 +517,7 @@
                 }
             }
             
-            //contar numero de defeitos considerando as palavras bug, fix, postfix, prefix
+            //CONTAR NUMERO DE DEFEITOS considerando as palavras bug, fix, postfix, prefix
             var mapFileBug = {};//armazenar quantidade de defeitos em cada arquivo
             for (i = 0; i < listcommit.length; i++) {
                 var message = listcommit[i].messageCommit;
@@ -547,6 +551,116 @@
                 }
             }
             //FIM CONTAGEM NUMERO DEFEITOS
+            
+            //CONTAR QUANTIDADE DE COMMITS DE CADA AUTOR
+            var mapAuthorship = {}; //Armazenar quantidade de commits de cada autor
+            for (i = 0; i < listcommit.length; i++) {
+                var author = listcommit[i].author;
+                
+                if (author in mapAuthorship){
+                    mapAuthorship[author] = mapAuthorship[author] + 1;
+                }else{
+                    mapAuthorship[author] = 1;
+                }
+            }
+            
+            var nameOwner;
+            var maxvalue = 0;
+            for(var name in mapAuthorship){
+                if(mapAuthorship[name] > maxvalue){
+                    nameOwner = name;
+                    maxvalue = mapAuthorship[name];
+                }
+            }
+            
+            console.log(mapAuthorship);
+            console.log(nameOwner);
+            
+            //contar quantas vezes cada arquivo foi commitado pelo owner
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                //quais arquivos foram comitados pelo owner do periodo
+                if(listcommit[i].author == nameOwner){
+                    
+                    for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                        if(shacommit === returnedJson[j].shaFile){
+                            if(returnedJson[j].nameFile in mapOwnershipFile){
+                                mapOwnershipFile[returnedJson[j].nameFile] = mapOwnershipFile[returnedJson[j].nameFile] + 1;
+                            }else{
+                                mapOwnershipFile[returnedJson[j].nameFile] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            //setar 0 para os demais arquivo que nao entraram na lista
+            for (i = 0; i < returnedJson.length; i++) { 
+                if(!(returnedJson[i].nameFile in mapOwnershipFile)){
+                    mapOwnershipFile[returnedJson[i].nameFile] = 0;
+                }
+            }
+            
+            console.log(mapOwnershipFile);
+            //FIM OWNERSHIP
+            
+            //CONTAR EXPERIENCE DE CADA AUTOR EM UM PERIODO
+            var mapExperience = {};//armazena experience de cada autor
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                    if(shacommit === returnedJson[j].shaFile){
+                        
+                        if(listcommit[i].author in mapExperience){
+                            mapExperience[listcommit[i].author] = mapExperience[listcommit[i].author] + returnedJson[j].lineChanged;
+                        }else{
+                            mapExperience[listcommit[i].author] = returnedJson[j].lineChanged;
+                        }
+                        
+                    }
+                }
+                
+            }
+            
+            var nameSenior;
+            var maxvalueex = 0;
+            for(var name in mapExperience){
+                if(mapExperience[name] > maxvalueex){
+                    nameSenior = name;
+                    maxvalueex = mapExperience[name];
+                }
+            }
+            
+             //contar quantas vezes cada arquivo foi commitado pelo usuario com mais experiencia
+            for (i = 0; i < listcommit.length; i++) {
+                var shacommit = listcommit[i].sha;
+                //quais arquivos foram comitados pelo usuario com mais experiencia
+                if(listcommit[i].author == nameSenior){
+                    
+                    for (j = 0; j < returnedJson.length; j++) {
+                        //ver quais arquivos tem o mesmo sha e incrementar no map
+                        if(shacommit === returnedJson[j].shaFile){
+                            if(returnedJson[j].nameFile in mapExperienceFile){
+                                mapExperienceFile[returnedJson[j].nameFile] = mapExperienceFile[returnedJson[j].nameFile] + 1;
+                            }else{
+                                mapExperienceFile[returnedJson[j].nameFile] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            //setar 0 para os demais arquivo que nao entraram na lista
+            for (i = 0; i < returnedJson.length; i++) { 
+                if(!(returnedJson[i].nameFile in mapExperienceFile)){
+                    mapExperienceFile[returnedJson[i].nameFile] = 0;
+                }
+            }
+            
+            console.log(mapExperience);
+            console.log(nameSenior);
+            //FIM EXPERIENCE
             
             //INICIO CONTAGEM PULL REQUEST ABERTO E FECHADO
             
@@ -626,6 +740,8 @@
                 var cell8 = row.insertCell(7);
                 var cell9 = row.insertCell(8);
                 var cell10 = row.insertCell(9);
+                var cell11 = row.insertCell(10);
+                var cell12 = row.insertCell(11);
 
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
@@ -637,6 +753,8 @@
                 cell8.innerHTML = mapFileCommentPullRequestClosed[name];
                 cell9.innerHTML = mapFilePullRequestOpen[name];
                 cell10.innerHTML = mapFileCommentPullRequestOpen[name];
+                cell11.innerHTML = mapOwnershipFile[name];
+                cell12.innerHTML = mapExperienceFile[name];
                 //var tf1 = setFilterGrid("teste2");
             }
             
@@ -742,7 +860,7 @@
                       ];
                       
             var arrayLine3 = [
-                        ['Periodo', 'P.R closed','P.R open']
+                        ['Periodo', 'P.R closed','P.R open','P.R closed comment','P.R open comment']
                         
                       ];
                       
@@ -766,6 +884,8 @@
                 var contaRemovida = 0;
                 var contaPullRequestFechado = 0;
                 var contaPullRequestAberto = 0;
+                var contaCommentPullRequestFechado = 0;
+                var contaCommentPullRequestAberto = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -794,6 +914,7 @@
                     
                     if(date < dPeriodo && date >= dInicio){
                         contaPullRequestFechado = contaPullRequestFechado + 1;
+                        contaCommentPullRequestFechado = contaCommentPullRequestFechado + returnedJsonPullClosed[i].numComments;
                     }
                 }
                 
@@ -804,12 +925,13 @@
                     
                     if(date < dPeriodo && date >= dInicio){
                         contaPullRequestAberto = contaPullRequestAberto + 1;
+                        contaCommentPullRequestAberto = contaCommentPullRequestAberto + returnedJsonPull[i].numComments;
                     }
                 }
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
-                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto]);
+                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto,contaCommentPullRequestFechado,contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
@@ -888,11 +1010,12 @@
             var arquivoModificada = [];//array para guardar o numero de linhas modficadas com indexes numerico para file
             var arquivoAdicionado = [];
             var arquivoRemovido = []; 
-            
             var arquivoPullRequestClosed = [];
             var arquivoPullRequestOpen = [];
             var arquivoCommentPullRequestClosed = [];
             var arquivoCommentPullRequestOpen = [];
+            var arquivoOwnership = [];
+            var arquivoExperience = [];
             
             for (var name in mapFiles) {
                 arquivoEntropia.push(mapFiles[name]);
@@ -900,11 +1023,12 @@
                 arquivoModificada.push(mapFilesChanged[name]);
                 arquivoAdicionado.push(mapFilesAdded[name]);
                 arquivoRemovido.push(mapFilesRemoved[name]);
-                
                 arquivoPullRequestClosed.push(mapFilePullRequestClosed[name]);//numero de pull request fechado por arquivo
                 arquivoPullRequestOpen.push(mapFilePullRequestOpen[name]);//numero de pull request fechado por arquivo
                 arquivoCommentPullRequestClosed.push(mapFileCommentPullRequestClosed[name]);//numero de comment pull request fechado por arquivo
                 arquivoCommentPullRequestOpen.push(mapFileCommentPullRequestOpen[name]);//numero de comment pull request fechado por arquivo
+                arquivoOwnership.push(mapOwnershipFile[name]);
+                arquivoExperience.push(mapExperienceFile[name]);
             }
             
             var corrEntDef = spearson.correlation.spearman(arquivoEntropia, arquivoDefeito);
@@ -916,11 +1040,13 @@
             var corrEntPullReqClosedComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestClosed);
             var corrEntPullReqOpen = spearson.correlation.spearman(arquivoEntropia, arquivoPullRequestOpen);
             var corrEntPullReqOpenComment = spearson.correlation.spearman(arquivoEntropia, arquivoCommentPullRequestOpen);
+            var corrEntOwner = spearson.correlation.spearman(arquivoEntropia, arquivoOwnership);
+            var corrEntExp = spearson.correlation.spearman(arquivoEntropia, arquivoExperience);
             
             var data = [
               {
-                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment'],
+                z: [[corrEntDef, corrEntMod,corrEntAdd, corrEntRem, corrEntPullReqClosed, corrEntPullReqClosedComment, corrEntPullReqOpen, corrEntPullReqOpenComment, corrEntOwner, corrEntExp], [-1, -1, -1, -1, 1, 1, 1, 1], [-1, -1, -1, -1, 1, 1, 1, 1]],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner', 'exp'],
                 y: ['Entropia', 'Afternoon', 'Evening'],
                 type: 'heatmap'
               }
@@ -1366,7 +1492,7 @@
                       ];
                       
             var arrayLine3 = [
-                        ['Periodo', 'P.R closed','P.R open']
+                        ['Periodo', 'P.R closed','P.R open', 'P.R closed Comment', 'P.R open Comme']
                         
                       ];
                       
@@ -1392,6 +1518,8 @@
                 var contaRemovida = 0;
                 var contaPullRequestFechado = 0;
                 var contaPullRequestAberto = 0;
+                var contaCommentPullRequestFechado = 0;
+                var contaCommentPullRequestAberto = 0;
                 
                 //Contar commit e linhas a cada 15 dias
                 for (i = 0; i < listcommit.length; i++) {
@@ -1421,6 +1549,7 @@
                     
                     if(date < dPeriodo && date >= dInicio){
                         contaPullRequestFechado = contaPullRequestFechado + 1;
+                        contaCommentPullRequestFechado = contaCommentPullRequestFechado + returnedJsonPullClosed[i].numComments;
                     }
                 }
                 
@@ -1431,12 +1560,13 @@
                     
                     if(date < dPeriodo && date >= dInicio){
                         contaPullRequestAberto = contaPullRequestAberto + 1;
+                        contaCommentPullRequestAberto = contaCommentPullRequestAberto + returnedJsonPull[i].numComments;
                     }
                 }
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
-                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto]);
+                arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto, contaCommentPullRequestFechado, contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
                 dInicio.setDate(dInicio.getDate() + 15);
                 dPeriodo.setDate(dPeriodo.getDate() + 15);
