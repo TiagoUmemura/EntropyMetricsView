@@ -542,11 +542,11 @@
                 var message = listcommit[i].messageCommit;
                 
                 //se encontrou as palavras adicionar a lista
-                if(message.indexOf("bug") !== -1 
-                    || message.indexOf("fix") !== -1
-                    || message.indexOf("postfix") !== -1
-                    || message.indexOf("prefix") !== -1
-                    || message.indexOf("fixes") !== -1
+                if(message.toLowerCase().indexOf("bug") !== -1 
+                    || message.toLowerCase().indexOf("fix") !== -1
+                    || message.toLowerCase().indexOf("postfix") !== -1
+                    || message.toLowerCase().indexOf("prefix") !== -1
+                    || message.toLowerCase().indexOf("fixes") !== -1
                     ){
                     
                     var shacommit = listcommit[i].sha;
@@ -1377,11 +1377,12 @@
                 var message = listcommit[i].messageCommit;
                 
                 //se encontrou as palavras adicionar a lista
-                if(message.indexOf("bug") !== -1 
-                    || message.indexOf("fix") !== -1
-                    || message.indexOf("postfix") !== -1
-                    || message.indexOf("prefix") !== -1
-                    ){
+                if(message.toLowerCase().indexOf("bug") !== -1 
+                    || message.toLowerCase().indexOf("fix") !== -1
+                    || message.toLowerCase().indexOf("postfix") !== -1
+                    || message.toLowerCase().indexOf("prefix") !== -1
+                    || message.toLowerCase().indexOf("fixes") !== -1)
+                {
                     
                     var shacommit = listcommit[i].sha;
                     console.log(listcommit[i].sha);

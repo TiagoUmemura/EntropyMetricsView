@@ -128,65 +128,54 @@ public class BuscarServlet extends HttpServlet {
             //System.out.println("Sha commit: " + commit.getSha());
             Commit commitdate = commit.getCommit();//pegar o tipo commit do repositoryCommit
             CommitUser commituser = commitdate.getCommitter();//pegar o commiter
-            //System.out.println("date: " + commituser.getDate());//no commiter pegar a data
-            //commitdate.getMessage();
             
-            //cherry pick quando author e null tem cherry pick
-            //System.out.println("teste" + commit.getAuthor().getLogin());
-            
-            //pegar commit entre as datas definidas
-            //if(commituser.getDate().after(dateinicio) && commituser.getDate().before(datefinal)){
-                System.out.println("Sha commit: " + commit.getSha());
-                System.out.println("date: " + commituser.getDate());//no commiter pegar a data
-                String datecommit = null;
+            System.out.println("Commit");
+            System.out.println(commit.getSha());
+            System.out.println(commituser.getDate());//no commiter pegar a data
+            String datecommit = null;
 
-                datecommit = sdf.format(commituser.getDate());
-                
-                //chamar DAO
-                System.out.println("date2: " + datecommit);
-                System.out.println("login: " + commit.getCommit().getCommitter().getName());
-                System.out.println("URL: " + commit.getUrl());
-                System.out.println("Message: " + commit.getCommit().getMessage());//testar
-                DAO.addCommit(nameProject2, commit.getCommit().getMessage(), datecommit, commit.getSha(), commit.getCommit().getAuthor().getName(), commit.getCommit().getUrl());
-                
+            datecommit = sdf.format(commituser.getDate());
+
+            //chamar DAO
+            System.out.println(datecommit);
+            System.out.println(commit.getCommit().getCommitter().getName());
+            System.out.println(commit.getUrl());
+            System.out.println(commit.getCommit().getMessage());//testar
+            
+            String messageCorrigido = commit.getCommit().getMessage();
+            messageCorrigido = messageCorrigido.replace("\'", "");
+            messageCorrigido = messageCorrigido.replace("\"", "");
+            messageCorrigido =  messageCorrigido.replace(",", "");
+            
+            DAO.addCommit(nameProject2, messageCorrigido, datecommit, commit.getSha(), commit.getCommit().getAuthor().getName(), commit.getCommit().getUrl());
+
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            //GHCommit API kousuke
+            GHCommit commitarq = repo.getCommit(commit.getSha());//passando SHA de uma API para outra
+            List<GHCommit.File> listarquivo = commitarq.getFiles();
+            for(int i = 0; i < listarquivo.size(); i++){
+                //System.out.println("nome do arquivo: " + listarquivo.get(i).getFileName());
+                //System.out.println("linhas modificadas: " + listarquivo.get(i).getLinesChanged());
+                System.out.println("Arquivos");
+                DAO.addFile(listarquivo.get(i).getFileName(), listarquivo.get(i).getLinesChanged(), listarquivo.get(i).getLinesDeleted(), listarquivo.get(i).getLinesAdded(), commit.getSha());
+                //setando quantidade de commits que cada arquivo teve
+
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                //GHCommit API kousuke
-                GHCommit commitarq = repo.getCommit(commit.getSha());//passando SHA de uma API para outra
-                List<GHCommit.File> listarquivo = commitarq.getFiles();
-                for(int i = 0; i < listarquivo.size(); i++){
-                    //System.out.println("nome do arquivo: " + listarquivo.get(i).getFileName());
-                    //System.out.println("linhas modificadas: " + listarquivo.get(i).getLinesChanged());
-                    System.out.println("Arquivos");
-                    DAO.addFile(listarquivo.get(i).getFileName(), listarquivo.get(i).getLinesChanged(), listarquivo.get(i).getLinesDeleted(), listarquivo.get(i).getLinesAdded(), commit.getSha());
-                    //setando quantidade de commits que cada arquivo teve
-                    
-                    try {
-                        TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    
-                    if(nomesArquivos.containsKey(listarquivo.get(i).getFileName())){
-                        //qtd mod quantidade de vezes que o arquivo ja foi modificado
-                        int qtdmod = nomesArquivos.get(listarquivo.get(i).getFileName());
-                        //qtd de vezes modificados + 1
-                        nomesArquivos.replace(listarquivo.get(i).getFileName(), qtdmod+1);
-                    }else{
-                        nomesArquivos.put(listarquivo.get(i).getFileName(), 1);
-                    }
-                }
-                
-                System.out.println("    ");
-                System.out.println("    ");
-                
-                //contador que conta numero de commits
-                count++;
-            //}
+
+            }
+
+            //contador que conta numero de commits
+            count++;
+        //}
              
         }
         
@@ -195,16 +184,17 @@ public class BuscarServlet extends HttpServlet {
         //Atencao: int number é o id.
         //state: open, close e all no estado do pull request
         for(PullRequest pullreq : servicePullRequest.getPullRequests(repoExample2, "close")){
-            System.out.println("Date open: " + sdf.format(pullreq.getCreatedAt()));
+            System.out.println("PullRequest");
+            System.out.println(sdf.format(pullreq.getCreatedAt()));
             if(pullreq.getClosedAt() != null){
-            System.out.println("Date close: " + sdf.format(pullreq.getClosedAt()));
+            System.out.println(sdf.format(pullreq.getClosedAt()));
             }
-            System.out.println("Name:" + pullreq.getTitle());
-            System.out.println("Author:" + pullreq.getUser().getLogin());
+            System.out.println(pullreq.getTitle());
+            System.out.println(pullreq.getUser().getLogin());
             
             
             Issue issue = serviceIssue.getIssue(repoExample2, pullreq.getNumber());
-            System.out.println("numComments: " + issue.getComments());
+            System.out.println(issue.getComments());
             
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -212,16 +202,19 @@ public class BuscarServlet extends HttpServlet {
                 Logger.getLogger(BuscarServlet.class.getName()).log(Level.SEVERE, null, ex);
             }
             
-            System.out.println("State: " + pullreq.getState());
+            System.out.println(pullreq.getState());
             System.out.println("");
             
            
             List<RepositoryCommit> pullcommits = servicePullRequest.getCommits(repoExample2, pullreq.getNumber());
-            System.out.println("Numero de commits: " + pullcommits.size());
+            System.out.println(pullcommits.size());
             
-            //https://api.github.com/repos/twbs/bootstrap/issues/24114/comments
-            //pullreq.getHead().getSha();
-            DAO.addPullRequest(pullreq.getTitle(), pullreq.getUser().getLogin(), pullreq.getNumber(), pullreq.getState(), issue.getComments(), sdf.format(pullreq.getCreatedAt()), sdf.format(pullreq.getClosedAt()), nameProject2);
+            //se merged true entao seta merged 1 no sql se nao 0
+            if(pullreq.getMergedAt() != null){
+                DAO.addPullRequest(pullreq.getTitle(), pullreq.getUser().getLogin(), pullreq.getNumber(), pullreq.getState(), issue.getComments(), sdf.format(pullreq.getCreatedAt()), sdf.format(pullreq.getClosedAt()), nameProject2, 1);
+            }else{
+                DAO.addPullRequest(pullreq.getTitle(), pullreq.getUser().getLogin(), pullreq.getNumber(), pullreq.getState(), issue.getComments(), sdf.format(pullreq.getCreatedAt()), sdf.format(pullreq.getClosedAt()), nameProject2, 0);
+            }
             
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -272,12 +265,12 @@ public class BuscarServlet extends HttpServlet {
         System.out.println("Commits:" + count);
         
         //printando qtde de commits que cada arquivo foi modificado
-        for (String key : nomesArquivos.keySet()) {
+        //for (String key : nomesArquivos.keySet()) {
                       
             //Capturamos o valor a partir da chave
-            int value = nomesArquivos.get(key);
-            System.out.println(key + " = " + value);
-        }
+            //int value = nomesArquivos.get(key);
+            //System.out.println(key + " = " + value);
+        //}
         
         response.sendRedirect("buscar.jsp");//redirect para mandar pra outra pagina
     }

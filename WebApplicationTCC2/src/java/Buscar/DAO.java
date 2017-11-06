@@ -112,7 +112,7 @@ public class DAO {
         }
     }
 
-    public static void addPullRequest(String pullTitle, String authorPull, int numberId, String state, int numComments, String dateCreate, String dateClose, String nameProject) {
+    public static void addPullRequest(String pullTitle, String authorPull, int numberId, String state, int numComments, String dateCreate, String dateClose, String nameProject, int merged) {
         Connection conexao = null;
         Statement statement = null;
 
@@ -121,7 +121,7 @@ public class DAO {
             conexao = DriverManager.getConnection(url + dbName, userName, password);
 //            Connection conexao = getConection(c);
             statement = conexao.createStatement();
-            String sql = "INSERT INTO pullRequest(pullTitle, authorPull, numberId, state, numComments, dateCreate, dateClose, nameProject) VALUES ( '" + pullTitle + "','" + authorPull + "','" + numberId + "','" + state + "','" + numComments + "','" + dateCreate + "','" + dateClose + "','" + nameProject + "');";
+            String sql = "INSERT INTO pullRequest(pullTitle, authorPull, numberId, state, numComments, dateCreate, dateClose, nameProject, merged) VALUES ( '" + pullTitle + "','" + authorPull + "','" + numberId + "','" + state + "','" + numComments + "','" + dateCreate + "','" + dateClose + "','" + nameProject + "','" + merged + "');";
             statement.execute(sql);
 
         } catch (Exception ex) {
