@@ -18,8 +18,9 @@ public class PullRequest {
     String dateCreate;
     String dateClose;
     String nameProject;
+    int merged;
 
-    public PullRequest(String pullTitle, String authorPull, int numberId, String state, int numComments, String dateCreate, String dateClose, String nameProject) {
+    public PullRequest(String pullTitle, String authorPull, int numberId, String state, int numComments, String dateCreate, String dateClose, String nameProject, int merged) {
         this.pullTitle = pullTitle;
         this.authorPull = authorPull;
         this.numberId = numberId;
@@ -28,7 +29,9 @@ public class PullRequest {
         this.dateCreate = dateCreate;
         this.dateClose = dateClose;
         this.nameProject = nameProject;
+        this.merged = merged;
     }
+    
     
     
     public String getPullTitle() {
@@ -94,6 +97,15 @@ public class PullRequest {
     public void setNameProject(String nameProject) {
         this.nameProject = nameProject;
     }
+
+    public int getMerged() {
+        return merged;
+    }
+
+    public void setMerged(int merged) {
+        this.merged = merged;
+    }
+
     
     
 }

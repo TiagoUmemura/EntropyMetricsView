@@ -363,8 +363,9 @@ public class DAO {
                 String dateCreate = rs.getDate("dateCreate").toString();
                 String dateClose = rs.getDate("dateClose").toString();
                 String nameProject = rs.getString("nameProject");
+                int merged = rs.getInt("merged");
                 
-                PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject);
+                PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject,merged);
                 //Commit c = new Commit("a","a","a","a","a");
                 lista.add(c);
                 
@@ -445,8 +446,9 @@ public class DAO {
                 String dateCreate = rs.getDate("dateCreate").toString();
                 String dateClose = rs.getDate("dateClose").toString();
                 String nameProject = rs.getString("nameProject");
+                int merged = rs.getInt("merged");
                 
-                PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject);
+                PullRequest c = new PullRequest(pullTitle, authorPull, numberId, state, numComments,dateCreate,dateClose,nameProject, merged);
                 //Commit c = new Commit("a","a","a","a","a");
                 lista.add(c);
                 

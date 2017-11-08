@@ -122,7 +122,8 @@
             <p><br><br><br></p>
             <!-- Exemplo de texto dinamico html: http://www.hardware.com.br/comunidade/texto-muda/1378036/-->
             <p>O numero total de commits no período é <span id="numbercommit"></span>. Número total de Pull Requests aberto no peŕiodo é <span id="pullrequest"></span>.
-            Número total de Pull Requests fechados no peŕiodo é <span id="pullrequestclosed"></span>.
+            Número total de Pull Requests merged no peŕiodo é <span id="pullrequestclosed"></span>.
+            Número total de Pull Requests unmerged no peŕiodo é <span id="pullrequestunmerged"></span>.
             Número total de autores é <span id="numberauthor"></span>.
             Autor com maior numero de commits é <span id="ownership"></span>.
             Author Owner fez <span id="numberownership"></span> commits.
@@ -134,7 +135,7 @@
             <input type="text"class="form-control" id="myInput" onkeyup="myFilter()" placeholder="Search for names..">
         </div>
         
-        <div class="col-md-12" style="height:130px; overflow:auto;display: none;" id="div_table">
+        <div class="col-md-12" style="height:500px; overflow:auto;display: none;" id="div_table">
          <table id="teste2" class="table table-striped">
             <tr>
               <th>Arquivo</th>
@@ -490,13 +491,6 @@
            var countCommitText = document.getElementById('numbercommit'); 
            countCommitText.innerHTML = countCommit[0].numbercommit;
            
-           //setar pullRequests abertos
-           var pulltext = document.getElementById('pullrequest');
-           pulltext.innerHTML = returnedJsonPull.length;
-           
-           var pullclosedtext = document.getElementById('pullrequestclosed');
-           pullclosedtext.innerHTML = returnedJsonPullClosed.length;
-           
            //cabecalho treemap array
            var treeMapArray = [
                         ['Location', 'Parent', 'Market trade volume (size)', 'Market increase/decrease (color)'],
@@ -696,34 +690,34 @@
             //FIM EXPERIENCE
             
             //INICIO CONTAGEM PULL REQUEST ABERTO E FECHADO
-            
-            //pull fechado comentario e pull por arquivo
-            for (i = 0; i < returnedJsonPullClosed.length; i++){
-                
-                var numComment = returnedJsonPullClosed[i].numComments;
-                
-                for(j = 0; j < jsonFilePullRequestClosed.length; j++){
-                    if(returnedJsonPullClosed[i].nameProject == jsonFilePullRequestClosed[j].nameProjectFilePull && returnedJsonPullClosed[i].numberId == jsonFilePullRequestClosed[j].pullReqNumber){
-                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
-                        if(jsonFilePullRequestClosed[j].fileName in mapFilePullRequestClosed){
-                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] + 1;
-                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] + numComment;
-                        }else{
-                            mapFilePullRequestClosed[jsonFilePullRequestClosed[j].fileName] = 1;
-                            mapFileCommentPullRequestClosed[jsonFilePullRequestClosed[j].fileName] = numComment;
-                        }
-                    }
-                }
-            }
-            
-            //pull aberto comentario e pull por arquivo
+            var pullMerged = 0;
+            var pullUnmerged = 0;
+            //pull criado fechado e merged, comentario e pull por arquivo
             for (i = 0; i < returnedJsonPull.length; i++){
                 
                 var numComment = returnedJsonPull[i].numComments;
                 
+                //contar merged e unmerged
+                if(returnedJsonPull[i].merged == 1){
+                    pullMerged = pullMerged + 1;
+                }else{
+                    pullUnmerged = pullUnmerged + 1;
+                }
+                
                 for(j = 0; j < jsonFilePullRequestOpen.length; j++){
-                    if(returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber){
-                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+                    //se foi merged
+                    if(returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber && returnedJsonPull[i].merged == 1){
+                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece       
+                        if(jsonFilePullRequestOpen[j].fileName in mapFilePullRequestClosed){
+                            mapFilePullRequestClosed[jsonFilePullRequestOpen[j].fileName] = mapFilePullRequestClosed[jsonFilePullRequestOpen[j].fileName] + 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestOpen[j].fileName] = mapFileCommentPullRequestClosed[jsonFilePullRequestOpen[j].fileName] + numComment;
+                        }else{
+                            mapFilePullRequestClosed[jsonFilePullRequestOpen[j].fileName] = 1;
+                            mapFileCommentPullRequestClosed[jsonFilePullRequestOpen[j].fileName] = numComment;
+                        }
+                    //se nao foi merged
+                    }
+                    if (returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber && returnedJsonPull[i].merged == 0){
                         if(jsonFilePullRequestOpen[j].fileName in mapFilePullRequestOpen){
                             mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] + 1;
                             mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] + numComment;
@@ -734,6 +728,35 @@
                     }
                 }
             }
+            
+            //setar pullRequests abertos
+            var pulltext = document.getElementById('pullrequest');
+            pulltext.innerHTML = returnedJsonPull.length;
+           
+            var pullclosedtext = document.getElementById('pullrequestclosed');
+            pullclosedtext.innerHTML = pullMerged;
+            
+            var pullunmergedtext = document.getElementById('pullrequestunmerged');
+            pullunmergedtext.innerHTML = pullUnmerged;
+            
+//            //pull aberto comentario e pull por arquivo
+//            for (i = 0; i < returnedJsonPull.length; i++){
+//                
+//                var numComment = returnedJsonPull[i].numComments;
+//                
+//                for(j = 0; j < jsonFilePullRequestOpen.length; j++){
+//                    if(returnedJsonPull[i].nameProject == jsonFilePullRequestOpen[j].nameProjectFilePull && returnedJsonPull[i].numberId == jsonFilePullRequestOpen[j].pullReqNumber){
+//                        //Verificar os arquivos do pulrequest e contar em quantos pullrequest o arquivo aparece
+//                        if(jsonFilePullRequestOpen[j].fileName in mapFilePullRequestOpen){
+//                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] + 1;
+//                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] + numComment;
+//                        }else{
+//                            mapFilePullRequestOpen[jsonFilePullRequestOpen[j].fileName] = 1;
+//                            mapFileCommentPullRequestOpen[jsonFilePullRequestOpen[j].fileName] = numComment;
+//                        }
+//                    }
+//                }
+//            }
             
             //Colocar valor 0 de pull req fechado para os demais arquivos
             for(var name in mapFiles){
@@ -946,26 +969,32 @@
                 }
                 
                 //Pull request fechado a cada 15 dias
-                for (i = 0; i < returnedJsonPullClosed.length; i++){
-                    var dateString = returnedJsonPullClosed[i].dateClose;
+                for (i = 0; i < returnedJsonPull.length; i++){
+                    var dateString = returnedJsonPull[i].dateClose;
                     var date = new Date(dateString);
+                    var dateopen = new Date(returnedJsonPull[i].dateCreate);
                     
-                    if(date < dPeriodo && date >= dInicio){
+                    if(date < dPeriodo && date >= dInicio && dateopen < dPeriodo && dateopen >= dInicio && returnedJsonPull[i].merged == 1){
                         contaPullRequestFechado = contaPullRequestFechado + 1;
-                        contaCommentPullRequestFechado = contaCommentPullRequestFechado + returnedJsonPullClosed[i].numComments;
+                        contaCommentPullRequestFechado = contaCommentPullRequestFechado + returnedJsonPull[i].numComments;
+                    }else{
+                        if(dateopen < dPeriodo && dateopen >= dInicio && returnedJsonPull[i].merged == 0){
+                            contaPullRequestAberto = contaPullRequestAberto + 1;
+                            contaCommentPullRequestAberto = contaCommentPullRequestAberto + returnedJsonPull[i].numComments;
+                        }
                     }
                 }
                 
                 //Pull Request aberto a cada 15 dias
-                for (i = 0; i < returnedJsonPull.length; i++){
-                    var dateString = returnedJsonPull[i].dateCreate;
-                    var date = new Date(dateString);
-                    
-                    if(date < dPeriodo && date >= dInicio){
-                        contaPullRequestAberto = contaPullRequestAberto + 1;
-                        contaCommentPullRequestAberto = contaCommentPullRequestAberto + returnedJsonPull[i].numComments;
-                    }
-                }
+//                for (i = 0; i < returnedJsonPull.length; i++){
+//                    var dateString = returnedJsonPull[i].dateCreate;
+//                    var date = new Date(dateString);
+//                    
+//                    if(date < dPeriodo && date >= dInicio){
+//                        contaPullRequestAberto = contaPullRequestAberto + 1;
+//                        contaCommentPullRequestAberto = contaCommentPullRequestAberto + returnedJsonPull[i].numComments;
+//                    }
+//                }
                 
                 arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
