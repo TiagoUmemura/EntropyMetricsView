@@ -907,7 +907,7 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Commits', 'Owner Commits']
+                        ['Periodo', 'Quantidade de Arquivos','Commits', 'Owner Commits', 'Exp Commit']
                         
                       ];
             var arrayLine2 = [
@@ -943,6 +943,7 @@
                 var contaCommentPullRequestFechado = 0;
                 var contaCommentPullRequestAberto = 0;
                 var contaCommitOwner = 0;
+                var contaCommitExp = 0;
                 
                 for (i = 0; i < listcommit.length; i++) {
                     var dateString = listcommit[i].dateCreate;
@@ -953,6 +954,10 @@
                         
                         if(listcommit[i].author == nameOwner){
                             contaCommitOwner = contaCommitOwner + 1; 
+                        }
+                        
+                        if(listcommit[i].author == nameSenior){
+                            contaCommitExp = contaCommitExp + 1; 
                         }
                         
                         var shaCommit = listcommit[i].sha;
@@ -997,7 +1002,7 @@
 //                    }
 //                }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner, contaCommitExp]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto,contaCommentPullRequestFechado,contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
@@ -1778,7 +1783,7 @@
             //TIMELINE GRAFICO
             //array para guardar os dados que serão plotados (quatidade de arquivos modificados por tempo)
             var arrayLine = [
-                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits', 'Commits Owner']
+                        ['Periodo', 'Quantidade de Arquivos','Quantidade de commits', 'Commits Owner', 'Commits Exp']
                         
                       ];
             var arrayLine2 = [
@@ -1816,6 +1821,7 @@
                 var contaCommentPullRequestFechado = 0;
                 var contaCommentPullRequestAberto = 0;
                 var contaCommitOwner = 0;
+                var contaCommitExp = 0;
                 
                 //Contar commit e linhas a cada 15 dias
                 for (i = 0; i < listcommit.length; i++) {
@@ -1828,6 +1834,10 @@
                         
                         if(listcommit[i].author == nameOwner){
                             contaCommitOwner = contaCommitOwner + 1; 
+                        }
+                        
+                        if(listcommit[i].author == nameSenior){
+                            contaCommitExp = contaCommitExp + 1; 
                         }
                         
                         for (j = 0; j < returnedJson.length; j++) {
@@ -1871,7 +1881,7 @@
 //                    }
 //                }
                 
-                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner]);
+                arrayLine.push([numPeriodo.toString(), contaArquivo, contaCommit, contaCommitOwner, contaCommitExp]);
                 arrayLine2.push([numPeriodo.toString(), contaModificada, contaAdicionada, contaRemovida]);
                 arrayLine3.push([numPeriodo.toString(), contaPullRequestFechado, contaPullRequestAberto, contaCommentPullRequestFechado, contaCommentPullRequestAberto]);
                 //Avançar 15 dias no periodo
