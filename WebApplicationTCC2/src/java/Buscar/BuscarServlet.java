@@ -227,6 +227,8 @@ public class BuscarServlet extends HttpServlet {
             //arquivos modificados no pull
             List<CommitFile> commitfile = servicePullRequest.getFiles(repoExample2, pullreq.getNumber());
             for(int i = 0; i < commitfile.size(); i++){
+                System.out.println("Files PullRequest");
+                
                 CommitFile c = commitfile.get(i);
                 
                 DAO.addFilesPullRequest(pullreq.getNumber(), c.getFilename(), c.getAdditions(), c.getDeletions(), c.getChanges(), servicePullRequest.getComments(repoExample2, pullreq.getNumber()).size(), nameProject2);
@@ -247,11 +249,11 @@ public class BuscarServlet extends HttpServlet {
                 RepositoryCommit rc = commitspull.get(i);
                 Commit c = rc.getCommit();
                 
-                System.out.println("Pullreq commit sha: " + rc.getSha());
-                System.out.println("Pullreq commit author: " + c.getAuthor().getName());
-                System.out.println("Pullreq commit date: " + sdf.format(c.getAuthor().getDate()));
-                System.out.println("Pullreq commit number: " + pullreq.getNumber());
-                System.out.println("Pullreq commit project: " + nameProject2);
+                System.out.println(rc.getSha());
+                System.out.println(c.getAuthor().getName());
+                System.out.println(sdf.format(c.getAuthor().getDate()));
+                System.out.println(pullreq.getNumber());
+                System.out.println(nameProject2);
                 
                 DAO.addCommitPullRequest(rc.getSha(), c.getAuthor().getName(), sdf.format(c.getAuthor().getDate()), pullreq.getNumber(), nameProject2, c.getMessage(), c.getUrl());
                 
