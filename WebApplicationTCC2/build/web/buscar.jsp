@@ -139,17 +139,18 @@
          <table id="teste2" class="table table-striped">
             <tr>
               <th>Arquivo</th>
-              <th>Entropia</th>
+              <th>Commits</th>
               <th>Add</th>
               <th>Remove</th>
               <th>Changed</th>
               <th>Defects</th>
-              <th>P.R Closed</th>
-              <th>P.R Closed Comment</th>
-              <th>P.R Opened</th>
-              <th>P.R Opened Comment</th>
+              <th>P.R Merged</th>
+              <th>P.R Merged Comment</th>
+              <th>P.R Unmerged</th>
+              <th>P.R Unmerged Comment</th>
               <th>Ownership</th>
               <th>Exp</th>
+              <th>Entropia</th>
             </tr>
          </table>
         </div>
@@ -258,10 +259,10 @@
               <th>Remove</th>
               <th>Changed</th>
               <th>Defects</th>
-              <th>P.R Closed</th>
-              <th>P.R Closed Comment</th>
-              <th>P.R Opened</th>
-              <th>P.R Opened Comment</th>
+              <th>P.R Merged</th>
+              <th>P.R Merged Comment</th>
+              <th>P.R Unmerged</th>
+              <th>P.R Unmerged Comment</th>
               <th>Ownership</th>
               <th>Exp</th>
             </tr>
@@ -799,6 +800,7 @@
                 var cell10 = row.insertCell(9);
                 var cell11 = row.insertCell(10);
                 var cell12 = row.insertCell(11);
+                var cell13 = row.insertCell(12);
 
                 cell1.innerHTML = name;
                 cell2.innerHTML = mapFiles[name];
@@ -812,6 +814,7 @@
                 cell10.innerHTML = mapFileCommentPullRequestOpen[name];
                 cell11.innerHTML = mapOwnershipFile[name];
                 cell12.innerHTML = mapExperienceFile[name];
+                cell13.innerHTML = mapFiles[name]/returnedJson.length;
             }
             
             //for para dividir em pastas, pacotes
@@ -916,7 +919,7 @@
                       ];
                       
             var arrayLine3 = [
-                        ['Periodo', 'P.R closed','P.R open','P.R closed comment','P.R open comment']
+                        ['Periodo', 'P.R merged','P.R unmerged','P.R merged comment','P.R unmerged comment']
                         
                       ];
                       
@@ -1182,8 +1185,8 @@
                     [null,null,null,null,null,null,null,null,propencommentOwnership,propencommentExperience],
                     [null,null,null,null,null,null,null,null,null,ownershipExperience]
                     ],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner', 'exp'],
-                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner'],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R merged', 'P.R merged Comment', 'P.R unmerged', 'P.R unmerged Comment', 'Owner', 'exp'],
+                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R merged', 'P.R merged Comment', 'P.R unmerged', 'P.R unmerged Comment', 'Owner'],
                 type: 'heatmap',
                 zmin: -1,
                 zmax: 1
@@ -2060,8 +2063,8 @@
                     [null,null,null,null,null,null,null,null,propencommentOwnership,propencommentExperience],
                     [null,null,null,null,null,null,null,null,null,ownershipExperience]
                     ],
-                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner', 'exp'],
-                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Closed', 'P.R Closed Comment', 'P.R Open', 'P.R Open Comment', 'Owner'],
+                x: ['Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Merged', 'P.R Merged Comment', 'P.R Unmerged', 'P.R Unmerged Comment', 'Owner', 'exp'],
+                y: ['Entropia','Defeito','Linhas modificadas','linhas adicionadas','linhas removidas', 'P.R Merged', 'P.R Merged Comment', 'P.R UNmerged', 'P.R Unmerged Comment', 'Owner'],
                 type: 'heatmap',
                 zmin: -1,
                 zmax: 1
